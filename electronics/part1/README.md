@@ -1,4 +1,8 @@
-In 24.4.2024 We met for the first part of the Electronics Workshop. 
+In 24.4.2024 We met for the first part of the Electronics Workshop. This part is mostly theoratical, with some practical application of building a control system.
+
+Presentations used:
+- [Tom's Slideshow](https://docs.google.com/presentation/d/1-kQRPxuOjtqOZDmWHgj9rgo71iQC9VG4_2SRn7aQ0mo/edit?usp=sharing) - until Slide 66
+- [Agam's Slideshow][https://docs.google.com/presentation/d/1dC1GV0fGQC_a8P3s0F6tjUUg_HeyRWFK/edit?usp=sharing&ouid=103040962347246613558&rtpof=true&sd=true]
 
 
 **TODO: INTRODUCTION, PURPOSE, AND SUCH**
