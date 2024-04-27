@@ -1,3 +1,5 @@
+In 24.4.2024 We met for the first part of the Electronics Workshop. 
+
 
 **TODO: INTRODUCTION, PURPOSE, AND SUCH**
 
