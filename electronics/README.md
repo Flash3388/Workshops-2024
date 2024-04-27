@@ -9,3 +9,5 @@ The purpose of the workshop:
   - To understand the limitations and capabilities of the devices, electronically
   - Understand the pre-made device classes from WPILib and what they do
   - Provide a basic capability to develop these classes, or understand which to use for a device
+ 
+[Collection of PDF Docs](https://drive.google.com/drive/folders/1N1JFWBrMrAFxqS_DNW9FBdSyB_8-QESz?usp=sharing)
