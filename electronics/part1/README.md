@@ -115,3 +115,20 @@ To control the motor controller (and thus the motor), the device has some data i
 ## Electronic Communication
 
 **TODO: ELECTRONICS COMMUNICATION**
+
+When two devices exist in the same electronic circuit, how can they communicate? How does one device makes the other do something?
+This question is essential for the operations of many devices. Take our motors and their controllers: how can the RoboRio tell them to operate in a specific manner? After all, in our code we are the ones to request the motor to rotate, and we specifiy both speed and direction.
+The same goes for our sensors: how can we get information from them?
+
+In this section, we will learn how this is done.
+
+### Basics of Data Transfer
+
+We've learned that in electronic circuits, there are 3 measures:
+- Voltage
+- Current
+- Resistance 
+
+Assume that one device controls the voltage over a wire, while a second device "reads" this voltage. In such a circuit, we then have the ability to say something by adjusting the voltage to certain levels. And this is relatively easy to do. By placing a variable resistor on the wire we can change the resistance and thus also the voltage. 
+This is the base to Voltage-Driven control, where the voltage level is encoded with specific data.
+This play with the voltage level is simple to perform. What actually occurs is that we change the energy of the electrons and this can easily be read. And because electrons are fast, the "reader" will see the changes almost instantly. This works fine for short distances.
