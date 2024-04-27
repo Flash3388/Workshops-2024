@@ -55,4 +55,24 @@
 
 ## Electronic Communications
 
+[Ben Eater - RS232 Protocol](https://www.youtube.com/watch?v=AHYNxpqKqwo&t=134s)
+
+[Ben Eater - USB Keyboard Protocol](https://www.youtube.com/watch?v=wdgULBpRoXk)
+
+[Ben Eater - CRC](https://www.youtube.com/watch?v=izG7qT0EpBw)
+
 [CANBus Beginners Guide](https://www.youtube.com/watch?v=YBrU_eZM110)
+
+### Tinkercad Circuits
+
+[Arduino - Basic Signals Output](https://www.tinkercad.com/things/kr7oMbhBMOy-2024-flash-electronics-workshop-basic-signals?sharecode=-8wHtp1BQxDDETN3GNjVVC7kd89c8VOmlp2_RUiCFQs)
+
+[PWM Generator](https://www.tinkercad.com/things/3LRI2BMHnKX-pwm-generator-555-timer?sharecode=SLn0EtdbGi_pQMmBsxGbLlzy2mNuzsIQbNh1TfiC0FU)
+
+[Arduino to Arduino - Serial Comm, Basic](https://www.tinkercad.com/things/4aslp722GPQ-2024-flash-electronics-workshop-serial-comm-no-clock?sharecode=CCe5IBqqdtpJsheCMXns8pnrXZ-bX9wsFAhl79MI2Pw)
+
+[Arduino to Arduino - Serial Comm, w\ Clock](https://www.tinkercad.com/things/adRc70nRwVu-2024-flash-electronics-workshop-serial-comm-w-clock?sharecode=lI_Ux5ZP07b60Oph0FgrkfncAGGi2MG8cP0VcsqubdI)
+
+[Arduino to Arduino - Serial Comm, w\ Start and Stop Bits](https://www.tinkercad.com/things/2uvyWgzatDx-2024-flash-electronics-workshop-serial-comm-startstop-bits?sharecode=T9hoBYHt-xXWfmztoz5NuX_2cjkI-WcuxSzNFS0_5oA)
+
+[Arduino to LCD - Parallel Comm](https://www.tinkercad.com/things/8IhScbvkzbt-2024-flash-electronics-workshop-lcd?sharecode=ac6eeu5wnbyTs8iisD9L-YQpMxT6aRl74NEotWF2juw)
