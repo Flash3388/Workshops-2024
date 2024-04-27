@@ -4,8 +4,9 @@ Presentations used:
 - [Tom's Slideshow](https://docs.google.com/presentation/d/1-kQRPxuOjtqOZDmWHgj9rgo71iQC9VG4_2SRn7aQ0mo/edit?usp=sharing) - until Slide 66
 - [Agam's Slideshow](https://docs.google.com/presentation/d/1dC1GV0fGQC_a8P3s0F6tjUUg_HeyRWFK/edit?usp=sharing&ouid=103040962347246613558&rtpof=true&sd=true)
 
+Electronics plays quite a significant part in our robot, as any physical actions we do depends on one component or another. In code, outputs to the robot are transmited and executed via some electronics. 
 
-**TODO: INTRODUCTION, PURPOSE, AND SUCH**
+In this part of the workshop we will look into the basics of electricity, the structure and devices that make up the Control System and the theory of communication via electronics.
 
 ## Electricity
 
