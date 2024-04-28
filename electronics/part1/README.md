@@ -132,3 +132,38 @@ We've learned that in electronic circuits, there are 3 measures:
 Assume that one device controls the voltage over a wire, while a second device "reads" this voltage. In such a circuit, we then have the ability to say something by adjusting the voltage to certain levels. And this is relatively easy to do. By placing a variable resistor on the wire we can change the resistance and thus also the voltage. 
 This is the base to Voltage-Driven control, where the voltage level is encoded with specific data.
 This play with the voltage level is simple to perform. What actually occurs is that we change the energy of the electrons and this can easily be read. And because electrons are fast, the "reader" will see the changes almost instantly. This works fine for short distances.
+
+![Voltage Comm Basic Circuit](resources/voltage-based-comm-basic.png)
+
+The above circuit illustrates sending digital data over a 3rd wire. As normal we have the "+" and "-" connections, which create a circuit over which voltage and current flow. You will see that they are marked as _VCC_ and _GND_. Generally, we can think of the as equivelent for "+" and "-" though this may not necessarily be the case. In reality the _VCC_ has the _higher voltage_ (say 5V) while the _GND_ has the _lower voltage_ (say 0V), but whether they are the "+" or "-" is circuit-dependent. Of course, when we connect them together, we get a flow of current as in any circuit. Now for the third wire, we can use it to create another circuit connecting the _VCC_ and _GND_ to each other and thus get voltage through it. On the controller device, we connect the _VCC_ to this wire via a switch. When the switch is open, the circuit is open and there is no voltage on the wire; when it is closed, the circuit is closed and the voltage will be the same as _VCC_. On the reading device, we connect this wire and the _GND_. This leads to a circuit from _VCC_ on the controlling device, through the third wire, and back to the _GND_. If we place a voltemeter on the reading device between the third wire and _GND_, we get a measure of voltage on the wire. So the device can now read this voltage and determine its value.
+This is not exactly accurate though, and there are many different circuit configurations, but it is the basic concept of the data transfer.
+
+### Electronic Noise
+
+**TODO**
+
+### Signal Types
+
+Generally, there are two types of signals that can be used to transmit data: analog and digital. This is true for many mediums, not just electricity, but these are the only ones used in electronics. We can use different circuits to generate these signals as a way to transfer data from one device to another.
+
+#### Analog
+
+Analog signals are continous time-varying signals constrained within a range. These signals use a medium property (i.e. voltage) to encode data. So at any given moment, this property (say voltage) represents a certain quantity, and is thus _analogous_ to this quantity.  
+
+![analog signal](https://github.com/Flash3388/Workshops-2024/assets/17641355/0bf5570c-6add-43b0-b036-d898c79b0d80)
+
+For a voltage-driven system, we can, for example, use the voltage to represent a certain sensor info, like temperature. So the signal of voltage (over time) will represent the temperature at any given moment. 
+
+One sensor may define a range of 0 degrees C to 20C. To encode this into the signal, we simply convert the temperature reading into voltage and set the voltage on the line to it. If we have a range of voltage between 0V and 5V, the conversion would be `voltage = temperature / 20 * 5`. This changes between sensors and devices.
+
+To provide this control over voltage we can use a variable resistor. With such a resistor, we can change the amount of resistance and thus change the voltage over the line, because the voltage lost to resistance is `V = I*R`, so assuming a constant current, the change will `R` will increase or decrease the voltage drop, changing the voltage on the line (after the resistor).
+
+![analog output circuit basic](https://github.com/Flash3388/Workshops-2024/assets/17641355/2b6c99e4-5ce0-4b29-8402-027df2f1079f)
+
+At their core, electronic circuits are analog. As they used varying voltages to create different behaviours. Another analog data is audio information: AM (Aplitude Modulation) transmitions, for example, change the amplitude of the signal to encode specific audio information.
+
+![audio signal](https://github.com/Flash3388/Workshops-2024/assets/17641355/e74ff14a-caaf-4226-afcc-b11ef3fa7b2c)
+
+
+
+
