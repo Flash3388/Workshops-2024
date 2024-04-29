@@ -280,6 +280,8 @@ Instead of transferring bits 1 by 1 on a wire, parallel communication uses multi
 
 ![Parallel Communication](https://github.com/Flash3388/Workshops-2024/assets/17641355/3407e4d0-fd7e-42bf-be61-a1eb800966b4)
 
+#### Serial vs Parallel
+
 ### Communication Bus
 
 #### I2C
