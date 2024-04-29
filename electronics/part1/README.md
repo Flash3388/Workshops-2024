@@ -255,6 +255,25 @@ This method is quite popular for data transfer. Protocols like USB and PCI/e are
 
 ![Serial Communication](https://github.com/Flash3388/Workshops-2024/assets/17641355/414f443f-8623-434c-ae0d-1103a7793675)
 
+##### Synchronization
+
+Sending serial information over one wire is nice and all, but actually it has a problem: how does the reader know when to read? In our graph earlier, we wrote each bit for one second before switching to the next bit. But if the reader doesn't know when to read, it could accidently read the same bit twice or three times, or maybe it will miss reading a bit. So how can we tell the reader when to read to catch all the bits?
+
+Well, in theory, we can tell the reader to read once every second, so that it reads each bit (because we write them every second). But this is still not good enough, for two reasons:
+- The reader needs to know when to actually start reading. When starting to read, the reader reads the first bit and then waits 1 second for the second bit and so forth. But it can't actually know when it needs to start automatically. One could decide to start reading when the voltage on the line becomes _HIGH_, but that only works if the first bit sent is `1`, otherwise we will miss the first `0`. But this idea does have some merit.
+- there is actually no gurantee that the writer will write exactly every second, and that the reader will reader exactly every second. This is because computer clocks are not necesarily accurate, they easily drift. Moreover, the reader and writer have different clocks, ticking at different times (depending on when the clock started, how fast it is, and how precise it is). So even if they started at the same time, they will quickly drift apart and lose synchronization.
+
+To solve this, we can take several different approaches, and different protocols do implement different solutions. But there are two classic approaches to this.
+
+Our first option is to synchronize the clocks by "transmitting" the writer clock to the reader. However this is done, it helps synchronize the reader to the writer, telling it exactly when to read. One way to do this is to connect another wire and used it to transmit the clock information. This information will tell the reader exactly when it should read the data information. So we keep the clock wire normally _LOW_. When we send data, we first set the data wire voltage, and then update the clock wire to _HIGH_ for the duration of the bit and return the clock wire to _LOW_ and switching to the next bit. What we'll get are short pulses on the clock wire that turn _HIGH_ when the bit should be read. So when the reader sees the clock wire switching to _HIGH_, it reads the bit.
+
+![Clock Line](https://github.com/Flash3388/Workshops-2024/assets/17641355/5916b00d-6efc-4e8e-87db-dc52942b4c80)
+
+
+Our second option is to synchronize the clocks by adding what we call _start_ and _stop_ bits to the data wire. These bits will indicate to the reader that the "message" has started and it should start reading bits at a constant interval. If the data wire is normally _LOW_, when can start the data transfer by setting it to _HIGH_ for one bit duration. This will indicate to the reader that we are transferring data, so when the reader sees the voltage turn to _HIGH_, it can wait one bit duration and then start reading bits at a pre-configured interval. When the message ends, we need to make sure the wire returns back to _LOW_ voltage so that we can turn it to _HIGH_ later for the start bit. This is the stop bit. Of course this still has the clock drift problem. But if we transfer a small amount of data, the drift should be low enough for the reader to read currectly.
+
+![Start/Stop Bits](https://github.com/Flash3388/Workshops-2024/assets/17641355/1a1e7d94-3ddc-46aa-8b58-0ea30fbbc656)
+
 #### Parallel
 
 Instead of transferring bits 1 by 1 on a wire, parallel communication uses multiple wires, one to transfer each bit. So with 8 wires, we can transfer a full byte at once.
