@@ -280,9 +280,41 @@ Instead of transferring bits 1 by 1 on a wire, parallel communication uses multi
 
 ![Parallel Communication](https://github.com/Flash3388/Workshops-2024/assets/17641355/3407e4d0-fd7e-42bf-be61-a1eb800966b4)
 
+Of course this requires one port for each wire so we can control the voltage on the wires, but in theory, we can effectively multiply our speed, because we are sending multiple bits at once. And we can combine it with serial on each wire, so at any moment, we can write a single byte and then another byte and another after that.
+
+But this isn't perfect. First of all, it suffers from the same synchronization problems as normal serial communication. And it can easily be solved in the same way, through a clock line or start/stop bits. However, because we have multiple wires, we must synchronize all those wires. If we have specialized hardware, it can write the bits to all the wires at the same time. But if we don't and we have to write to each wire individually, then we have a problem where each wire isn't synchronized with the other wire. Consider that our computer can only perform one thing at a moment, so if we can only write to one wire, it means that there is a delay between writing to each wire. This causes a delay between them, making it more difficult to synchronize.
+
+This doesn't mean parallel can't be used, but it has its difficulties. Some uses of parallel bypass this by only transfering 1 bit per wire. This still lets us transfer multiple bits quickly, especially if we have the hardware to write to all the wires at once.
+
+Another approach could be to treat each wire as a seperate serial wire. This will let us send several messages (one per wire) individually and then combine them. This again increases the speed. But because each wire is seperate, we do not need to synchronize them to each other, as they can be read seperatly.
+
 #### Serial vs Parallel
 
+ Serial    | Parallel
+------------------------------------------|----------------------
+Simpler to synchronize, as there is only one data wire normally. | Multiple wires to synchronize complicate synchronization
+1 bit at a time | multiple bits at a time (1 bit per wire)
+data will take time to transmit and receive | data can be transferred immediatly if the size of the data is equal to the amount of wires
+
+So both are used for different situations, and are combined some of the time. A lot of protocols use serial communication over multiple wires in order to speed up communication. RS-232 for example uses two wires: one to send serial data from device A to B and another to send data from device B to A. So the devices can send data to each other at the same time. This is called full-duplex: communication can go both ways at the same time.
+
 ### Communication Bus
+
+We know that we can use serial communication to send information from one device to another. But what if we have to communicate between more than two devices? This is actually a common problem, as complex machinary (like cars and planes) have many many devices and computers that make up different functionalities. 
+
+Here we are introduced to the bus topology. 
+
+![bus topology](https://github.com/Flash3388/Workshops-2024/assets/17641355/66e02695-c084-413a-8f43-204682577296)
+
+The bus topology involves using a single line of communication (amount of wires depends on the protocol) which is shared among all the devices. This way, when communicating over the line, all the devices can talk to one another, since they are all connected over the same wires. For this to work, we need several things:
+- All the devices must be able to read/write to the wires, that way they can all talk to each other. This is normally done by making sure all devices have ports connected to the wires.
+- We need a way to send data for just one device. Normally, we only want to communicate with one device at a moment, since each device expects different data. Consider: when we talk with a distance sensor we talk about some stuff, but when its a motion sensor we talk about different stuff. So not all devices should actually use all the data, because it is not _meant_ for them. There are several ways to mark data for a specific device. One approach is to add some bits at the start of the data that indicates which device it is meant for. So when a message is sent, all devices read it, but after they see the message isn't meant for them, they ignore it.
+- Since all the device communicate on the same line, at the base, only one device can communicate at one moment. If two tried to send data on the same wire, they would interfere with each other. So there must be a way to prevent this from happening, a way to make sure a device doesn't write data to the wires while another device does the same.
+
+But Buses have problems too:
+- There is a physical limit of how many bits can be sent over a single line. This is called the bandwidth. Because all devices communicate on the same line, it means there is a total limit of data that all the devices can send to each other every minute. And because there are several devices, more data is normally transferred, so while this limit is true to all communication, it is more relevant for buses.
+- Because all devices communicate over a single shared line, if something happens to it, we loss communication with multiple devices and not just one. So we have a serious failure point.
+- Due to the complexity of bus communication, it generally requires more complex hardware than just normal digital or analog ports.
 
 #### I2C
 
