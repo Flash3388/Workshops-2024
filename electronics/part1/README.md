@@ -404,3 +404,13 @@ This bus does not use master-slave configuration, meaning that all devices may i
 
 ![CANBus arbitration](https://github.com/Flash3388/Workshops-2024/assets/17641355/22a955c6-686d-44cb-a9f3-13f6ad610221)
 
+#### Comparing Buses
+
+Aspect | I2C  | SPI  | CAN
+------|--------|------|------
+Clock | Synchronized (Clock line controlled by master) | Synchronized (Clock line controlled by master) | Asynchronous (no clock line)
+Speed | 100 Kbps - 1 Mbps | Up to 65 Mbps | Up to 1 Mbps
+Max Wire Length | Up to 1 Meter for 100 Kbps | Up to 10 Meters | Up to 40 Meters for 1 Mbps
+Error Handling | ACK/NACK | Nothing pre-defined, users will have to implement their own | CRC and specialized frames for errors
+Number of Wires | 2 | Minimum 4, depending on amount of CS lines | 2
+
