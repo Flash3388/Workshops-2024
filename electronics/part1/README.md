@@ -377,3 +377,30 @@ Unlike _I2C_, _SPI_ does not have a uniform format for data (as was with the _I2
 ![SPI data](https://github.com/Flash3388/Workshops-2024/assets/17641355/f7b0945c-4028-4464-b640-f25d8506e4dd)
 
 #### CANBus
+
+The _Controlled Area Network_ (CAN) bus is a standard for vehicle designs, connecting together many components which make up a vehicle. It is a rather more complex protocol, but also quite capable. This bus uses serial data transfer with a message-based protocol.
+
+![CANBus nodes](https://github.com/Flash3388/Workshops-2024/assets/17641355/55f7f5e6-e881-4406-8340-8244b8fbb062)
+
+It is made up of 2 lines of communication: _CAN HIGH_ and _CAN LOW_, both of which are used to transmit data is a twisted-pair configuration. It does not have a clock line (unlike the previous protocols we've looked at). In this configuration, to send a bit of data, both lines are changed to a value indicating that bit. It uses differential voltages in the wires such that the subtraction between the voltages of the wires (_voltage HIGH_ - _voltage LOW_) is equal to the actual value we wish to transfer. 
+
+![differential data](https://github.com/Flash3388/Workshops-2024/assets/17641355/74f28d81-155d-4c18-bd2b-7df32abcadd6)
+
+The bus has two voltage states:
+- There is the recessive state. This state has both lines at a voltage of `2.5v` so that the differance between them is `0v`. This is the idle state of the bus. So when no data is transferred, this is the state this bus is in. This state also indicates a logical `1` when data _is_ transferred. It's considered _recessive_ because it is the default state of the bus. So when the devices on the bus do nothing, then it occurs, meaning that it can be overriden.
+- There is the dominant state. The state of line HIGH is `3.75v` and of the LOW is `1.25v`, so their subtraction leads to a `2.5v`. This state indicates a logical `0` when data _is_ transferred. This state is dominant because it requires an active action from a device to be achieved and it overrides the default state. So when a device wants the state to be recessive, it has to do nothing, but when it wants it as dominant, it to actively change the voltage on the bus.
+
+Data transferred over the CANBus is sent in specific format:
+- Start bit: indicates the start of the frame
+- ID: indicates an unique ID for each message to identify itself. So the receiver can know what the message coontains
+- Control: the control portion contains the length of the data being sent
+- Data: the data portion is between 0–64 bits of data, with the length being stated in the control portion of the message.
+- CRC (Cyclic Redundancy Check): a number used for checking the validaty of the data received (in case of data corruption due to noises).
+- EOF (End of Frame): indicates that the frame has ended and that a new message may be sent
+
+![CANBus frame](https://github.com/Flash3388/Workshops-2024/assets/17641355/45340b06-f30e-46a1-a4f8-78318494df8b)
+
+This bus does not use master-slave configuration, meaning that all devices may initiate communication with any other device on the bus. This of course introduces complications of how to make sure the devices do not talk over each other, but it does allow devices to update each other freely without the intervantion of a controlling device. The conflicts of communication is solved by a process of arbitration. When two devices wish to communicate at the same time, they may both initiate communication and start sending their data. While sending their data, they also pay attention to what happens on the wire. While there messages are exactly the same, both of them communicate over the bus. However, the moment their messages differ, then arbitration actually occurs. When the messages differ there are two options, as the bus can only be a logical `0` or `1`. The device which attempts to send a `0` will try to put the bus in a dominant state. Because the dominant state overrides the recessive state, than the dominant state will be the one the bus takes. The devices trying to write `1` (recessive state) will see that the bus state is different from what it wanted and realize that another device is communicating and thus stop the communication. Because devices sending `0` win over devices sending `1` and _ID_ is the first info sent, then normally messages with lower _ID_ will win arbitration.
+
+![CANBus arbitration](https://github.com/Flash3388/Workshops-2024/assets/17641355/22a955c6-686d-44cb-a9f3-13f6ad610221)
+
