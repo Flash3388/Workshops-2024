@@ -316,8 +316,64 @@ But Buses have problems too:
 - Because all devices communicate over a single shared line, if something happens to it, we loss communication with multiple devices and not just one. So we have a serious failure point.
 - Due to the complexity of bus communication, it generally requires more complex hardware than just normal digital or analog ports.
 
+##### Registers
+
+Communications on buses sometimes take the same of read/write operations from/to registers. Registers are reserved spaces in memory for information/data, basically like a variable. Devices will allocate a set amount of space for these registers, where each register will store information regarding control/state of the device itself. For example, an accelerometer can have a register which stores the measure of acceleration measured by the accelerometer, or a control register which defines how the accelerometer should operate.
+
+Some buses frame their communication around read and write operations with these registers. Say I wish to read the acceleration from an accelerometer. For that purpose, I can send a read request to device requesting the contents of the register which contains this information. This register (like all registers) will be identified by a pre-defined address (basically a number). In return, the value of the register is returned and then can be used. Another example is writing to a register. Say the accelerometer has register which says whether the device should be in sleep-mode or operate normally. If I wish to put the device to sleep, all I have to do is to send a write request to that register address with a value saying "enter sleep mode". The device will later query the value of the register, seeing that it should enter sleep mode and will do so.
+
 #### I2C
 
+The _Inter-Integrated Circuit_ (I2C) bus was originally conceived as a way for two integrated circuits to communicate with each other (hence, the name). Being a bus, it allows multiple devices to communicate over shared communication lines. 
+
+![I2C scheme of nodes](https://github.com/Flash3388/Workshops-2024/assets/17641355/528fd0dd-88fb-45a3-91a8-7596f5147e30)
+
+It follows the master-slave architecture (now renamed to controller-peripheral). In this architecture, the communcation is controlled and managed by a single device, called the controller, while the other devices are known as peripherals. This means that only the controller device can initiate communication while the peripherals merely respond to the controller's request. So, say we have a keyboard connected as a device on the bus and we want to know which keys are pressed. Well, the keyboard is not allowed to tell us by itself, since it is simply a peripheral. The controller (us, the computer), has to send a message to the keyboard requesting that information, to which the keyboard will respond. This scheme provides a solution to preventing two devices from communicating at the same time, since because only the controller can initiate the communication, it can make sure only one device will communicate - either it or the peripheral it wishes to speak to. However, I2C does have support for _multi-master_ operation, where there are multiple _controllers_ over the bus.
+
+Data transfer occurs over two different wires: the _SDA_ (data line) and _SCL_ (clock line). It is a serial communication which uses a clock line. The clock line is controlled by the controller, which sets the pace of the communication. When the controller writes, it writes at the same pace as the clock it data it outputs. When the peripheral writes, it writes according to the clock data as requested by the controller.
+
+Each device has a 7 bit address pre-programmed into it. The _MPU-6050_ IMU has the address `0x68`. So for the controller to communicate with this device on the bus, it will use this address. Of course this has a problem were attaching two devices of the same type on the same bus will lead to an address collision. To solve this, some devices have an hardware switch to allow changing between two pre-set addresses, although this limits to two or three devices of the same model.
+
+Data is transferred over the bus in pre-defined frames, each of this frames has a specific format. This allows the reader to know exactly how to interpret the data sent. Each frame is 8 bits long. A normal communication is made up of:
+- Start: indicates to the devices on the bus that communication started and the bus is busy
+- Address Frame: each communication has one address frame which indicates who the communication is done with
+  - Address: the address the frame is intended for (which peripheral), with the most significat bit being the first bit.
+  - Read/Write bit:
+    - `0` means the controller wants to read data from the peripheral
+    - `1` means the controller wants to write data to the peripheral
+  - ACK/NACK: once the device has received the frame it will either report ACK or NACK to indicate that the data was received successfully
+- Data Frame: each communication can have many data frames. Each will contain one byte of the data
+ - Byte: byte of the data, with the most significat bit being the first bit.
+ - ACK/NACK: report on successfully receiving the last byte of data 
+- Stop : indicates to the devices on the bus that communication is done and the bus is free
+
+![frame format](https://github.com/Flash3388/Workshops-2024/assets/17641355/2228f387-c6c7-4da6-8968-686d7ad42cdd)
+
+The ACK/NACK bit is at the end of each frame. It is intended to allow the recipent of the data to report whether it has received that data. For the sender of the data, this bit is left un-touched (idle state, which is HIGH), this value means NACK (not acknowledged). The recipent has to manually pull the line to _LOW_ to indicate ACK (acknowledged). So, after the frame is sent, the recipient has to report ACK if it has properly received the data, or leave the line as is to report NACK. If ACK is reported, the sender will know (by reading the line) that the recipent has received the data successfully. If the line is left as NACK, the sender will know that the data wasn't received properly and should resend it.
+
+Frames operate for register read/write. The read/write bit in the address frame indicate if reading or writing to the register is wanted. The first data frame indicates the address of the register. The subsequent data frames differ depending on whether it is a read or write operation: for read operations the data frames are provided from the device and they are the value of the register. For write operations these frames are provided by the controller and are the value for that register. The amount of frames depend on the size of the register: 1 frame for 1 byte, 2 frames for 2 bytes and so forth. 
+
 #### SPI
+
+The _Serial Peripheral Interface_ (SPI) is a rather simple general bus built around a straight-forward 2 way serial communication. It is considered the de facto for serial communication for many devices, which lead to it having many variants.
+
+![SPI nodes](https://github.com/Flash3388/Workshops-2024/assets/17641355/dec2f120-6e9a-4bfc-9b5b-43ef785a3cf3)
+
+Unlike _I2C_, it normally has 3 standard communication lines:
+- MISO: Master In, Slave Out: line for the slave to write and master to read
+- MOSI: Master Out, Slave In: line for the master to write and slave to read
+- SCK: The clock line
+
+This means that it is capable of full-duplex communication, because the master and slave can read at the same time (thanks to there being a line dedicated to each direction). This can increase the speed of communication as more data can be transferred over the bus. The clock line is controlled by the master and indicates the timing of data transmition. At each rising edge of the clock, the MISO and MOSI lines can have 1 bit transferred.
+
+As the names suggest, SPI follows a master-slave architecture like _I2C_, so the master has to initiate communication with a selected slave. However, because there are 2 communication lines, the slave only has to wait for the master to trigger it, but does not have to wait for the master to send data. Though it is typical for the slave to wait for the master to request it to do something before sending any information. 
+
+Unlike _I2C_ though, selection of the peripherial is done not via address info sent over the communication line, but rather through a seperate set of lines named CS (chip-select). Each CS line is connected to a particular peripheral (so one CS per peripheral). When the CS line is brought to LOW voltage, this indicates to the slave that communication with it has started, and when returned to HIGH, the communication has stopped.
+
+So in total, SPI has at least 4 wires (MISO, MOSI, SCK, CS) with an additional CS line for each subsequent slave. The MISO, MOSI and SCK lines are shared among all slaves.
+
+Unlike _I2C_, _SPI_ does not have a uniform format for data (as was with the _I2C frame_). Rather different devices have their own formats for communication. Accelerometers, for example, may use a register based communication as done in _I2C_. However, RF transmitters will generally just expect to receive bursts of data which they should transmit.
+
+![SPI data](https://github.com/Flash3388/Workshops-2024/assets/17641355/f7b0945c-4028-4464-b640-f25d8506e4dd)
 
 #### CANBus
