@@ -147,7 +147,13 @@ This is not exactly accurate though, and there are many different circuit config
 
 ### Electronic Noise
 
-**TODO**
+Noise is an unwanted disruption to a signal. In electronic circuits these disturbances manifest themselves via changes to the voltage on the wire.
+
+![noise example](https://github.com/Flash3388/Workshops-2024/assets/17641355/28d6d997-61f1-412f-b7f6-ca422046dbaa)
+
+Noises are generally unavoidable, but usually are pretty small in effect. So when we have a 5V voltage on a wire, in reality it is never exactly stable, jumping wildely around 5V both up and down (illustrated by the image above).
+
+There are many causes for noises, eminating from outside sources projecting electro-magnetic fields that affect the transfer of electrons in the conductor, or properties of the material itself that disrupt the electrons.
 
 ### Signal Types
 
