@@ -125,3 +125,128 @@ public class Robot extends TimedRobot {
   ...
 }
 ```
+
+#### Example - Led Blinking
+
+The following code blinks a led connected to DIO port 0 every 1 second. This is done by changing the output from LOW to HIGH and then from HIGH to LOW.
+
+```java
+public class Robot extends TimedRobot {
+  
+  private DigitalOutput output;
+  private double startTimeSeconds;
+
+  @Override
+  public void robotInit() {
+    output = new DigitalOutput(0);
+  }
+  ...
+  @Override
+  public void teleopInit() {
+    // start with LOW output (led off)
+    output.set(false);
+    startTimeSeconds = Timer.getFPGATimestamp();
+  }
+
+  @Override
+  public void teleopPeriodic() {
+    double now = Timer.getFPGATimestamp();
+    if (now - startTimeSeconds >= 1) {
+      // 1 second has passed since last change of voltage
+
+      // get the current state of the output and reverse it.
+      // so if it was HIGH, we now switch to LOW or vice-versa.
+      boolean isHigh = output.get();
+      output.set(!isHigh);
+
+      // store the time of the change
+      startTimeSeconds = now;
+    }
+  }
+  ...
+}
+```
+
+#### Digital Input Interrupts
+
+Normally processors execute one set of instructions, one instruction at at time. However, sometimes certain situations occur which the processor must handle immediatly, like certain errors or problems in execution, or devices which require special attention. This is what interrupts are for. They are basically special requests to the processor to stop the current code execution and execute a specialized code which will handle the unique situations. At any given moment we may request the processor to do this by sending it an interrupt signal. And so interrupts are the corner-stone for many functionalities handled by modern computers. Of course, interrupts have their limitations and should be used for everything as it will cause the computer to freeze. But when used wisely, they are quite important.
+
+One possible use is to send an interrupt when a certain digital signal is received over a digital port. This will allow us to quickly handle this signal as soon as it arrives. If we didn't use interrupts, we would've had to wait for the processor to finish what's its doing. Consider: `teleopPeriodic` is executed every 20ms by the processor. Without interrupts we would have to wait up to 20ms to handle a digital signal, so when it comes to time-sensitive tasks, we have a problems. But interrupts solve this as we are now able to react to changes in the digital signals almost immediatly.
+
+The processor can be configured for two types of interrupts from digital signals:
+- RISING interrupts occur when the digital signals changes from LOW to HIGH
+- FALLING interrupts occur when digital signals changes from HIGH to LOW
+
+We won't be writing interrupt handlers ourselves for the RoboRIO, as this functionality is hidden from users. But we will be using code which depends on them.
+
+#### Digital Input Counters
+
+Counters are specialized code devices which use digital input interrupts. They are quite versitile and are the basis for interacting with many devices. They allow us to count and measure digital pulses over the digital pins of the RoboRIO. Because they use interrupt handlers they can react to short and quick changes. For example, they can measure digital pulses in microsecond accuracy.
+
+Counters have multiple operation modes, each can be used to working with different devices
+- Two pulse mode: counts edges on two input ports, +1 for edge from one port and -1 for edge from the second port.
+- Semi period mode: used to measure length of a pulse on a single input port.
+- Pulse length mode: used to count based on the length of the pulse received +1 or -1 depending on the length.
+- External direction mode: basically two pulse mode + an external port which indicates which channel should be +1 and which should be -1.
+
+We will look at examples for two of these modes.
+
+A two pulse mode counter will count the edges (RISING/FALLING) on two digital ports. It has an up port, whose edges are counted by adding +1 to the count and a down port, whose edges are counted by adding -1 to the count. This mode is useful when working with quadrature-encoded signals, like relative encoders.
+```java
+public class Robot extends TimedRobot {
+  
+  private DigitalInput inputUp;
+  private DigitalInput inputDown;
+  private Counter counter;
+
+  @Override
+  public void robotInit() {
+    // create the ports
+    inputUp = new DigitalInput(0);
+    inputDown = new DigitalInput(1);
+
+    counter = new Counter(Counter.Mode.kTwoPulse);
+    counter.setUpSource(inputUp);
+    counter.setDownSource(inputDown);
+    counter.setUpSourceEdge(/*should count on rising edge*/ true, /*should count on falling edge*/ false);
+    counter.setDownSourceEdge(/*should count on rising edge*/ true, /*should count on falling edge*/ false);
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    // gets the edge counts
+    // basically, based on our configuration, the count actual to amount of rising edges on channel 0 - amount of rising edges on channel 1.
+    int count = counter.get();
+  }
+  ...
+}
+```
+
+A semi period mode counter will count both the rising and falling edges on a single input port, as well as measure the length of this pulse. It can be used to read pulse-width modulated singles.
+```java
+public class Robot extends TimedRobot {
+  
+  private DigitalInput input;
+  private Counter counter;
+
+  @Override
+  public void robotInit() {
+    // create the ports
+    input = new DigitalInput(0);
+
+    counter = new Counter(Counter.Mode.kSemiperiod);
+    counter.setUpSource(input);
+    counter.setSemiPeriodMode(true);
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    // returns the length of the last received pulse in seconds.
+    double lengthSeconds = counter.getPeriod();
+  }
+  ...
+}
+```
+
+#### Example - HC-SR04 Ultrasonic
+
