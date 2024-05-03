@@ -248,5 +248,70 @@ public class Robot extends TimedRobot {
 }
 ```
 
+We'll soon see examples of how we can use this.
+
 #### Example - HC-SR04 Ultrasonic
+
+The _HC-SR04_ is a cheap and simple Ultrasonic sensor. Like every device, it has a [datasheet](https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf) which describes how it works. 
+
+Like all ultrasonics, it trasmits a sound wave, which then impacts the object infront of it and returns back to the sensor. That way, the sensor can measure the distance to the object by measuring the time it took the sound wave to return ($distance = {speed of sound \over time it took the wave to return}$).
+
+![HC-SRO4 sending sound waves](https://github.com/Flash3388/Workshops-2024/assets/17641355/b25f44c2-6345-4c04-9de2-f9d702b157d5)
+
+The sensor has 4 pins:
+- VCC: connection for power supply for the sensor. It requires 5V voltage and 15 mA current. Can be provided from the VCC connection on the DIO port.
+- GND: ground connection of the power supply. Can be provided from the GND connection on the DIO port.
+- TRIG: trigger signal line. This line is used to tell the sensor when to measure the distance.
+- ECHO: echo signal line. This line is used to tell us about the measurement of distance.
+
+![HC-SR04 Pinout](https://github.com/Flash3388/Workshops-2024/assets/17641355/ea545dbb-0844-4c6d-ae94-3a98e72d5d9b)
+
+To take a measurement, the sensor expects to receive a 10us (10 microsecond) pulse via the TRIG pin. This tells it to send the sound wave.
+
+Once measurement is started, the echo pin is changed to HIGH. This is left HIGH until the sound wave returns to the sensor. When it does, the pin is changed back to LOW. This effectively creates a pulse which starts when the sound wave is sent and ends when the sound wave returns. So its length will be equal to the time it took the sound wave to go from the sensor to the object and then back. So to calculate the distance, we need to measure the length of the pulse and then calculate the distance via the following formula: $distance \ meters = {speed \ of \ sound \over pulse \ length} = {340 \ meters \ per \ second \over pulse \ length \ seconds}$. To measure the pulse length with can use a counter in semi period mode.
+
+The following code interfaces with this sensor:
+```java
+
+  private DigitalOutput trigPort;
+  private DigitalInput echoPort;
+  private Counter counter;
+
+  private boolean isPulseSent;
+
+  @Override
+  public void robotInit() {
+    trigPort = new DigitalOutput(0);
+    echoPort = new DigitalInput(1);
+
+    counter = new Counter(Counter.Mode.kSemiperiod);
+    counter.setUpSource(echoPort);
+    counter.setSemiPeriodMode(true);
+
+    isPulseSent = false;
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    if (isPulseSent) {
+      // send a pulse to start measurement
+      isPulseSent = true;
+      trigPort.pulse(1e-5);
+    } else {
+      // pulse was sent, wait for it to return
+      if (counter.get() % 2 == 0) {
+        // if the counter has counted an even number of pulses, than we know it counted both the rising edge and falling edge of the pulse.
+        // that means that a full pulse has been received, so we can read its length 
+        double lengthSeconds = counter.getPeriod();
+        double distanceM = 340.0 / lengthSeconds;
+
+        // prepare for another ping
+        isPulseSent = false;
+      }
+    }
+  }
+  ...
+}
+```
+
 
