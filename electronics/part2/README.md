@@ -597,3 +597,80 @@ public class Robot extends TimedRobot {
   ...
 }
 ```
+
+### SPI
+
+Just as with I2C, the SPI port is made up of several wires implementing the communication of the SPI bus. Theres the MISO, MOSI, SCLK and 4 CS pins. There's also 2 VCC (of different voltages) and 1 GND. So this also of up to 4 devices in the SPI bus.
+
+![SPI port](https://github.com/Flash3388/Workshops-2024/assets/17641355/324146e2-f7d5-4008-bcc2-55e25988559f)
+
+Being a bus, this is a complex protocol and already implemented in hardware and low-level software. All we do is interact with the read and write buffers to request and receive data from the devices. The port can also be configured to automatically read and write data in certain situations (called auto mode), like when receiving an interrupt. This opens a lot of possibilities, but we will not be examining this feature here.
+
+```java
+public class Robot extends TimedRobot {
+  
+  private SPI port;
+
+  @Override
+  public void robotInit() {
+    // open a handle to the SPI hardware which allows read/write to the device connected to CS number 0.
+    port = new SPI(SPI.Port.kOnboardCS0);
+
+    // configure SPI operating mode
+    // clock rate of 2000000 Hz
+    // Mode3 = Clock idle = HIGH, data sampled on the rising edge of the clock
+    // CS idle = HIGH
+    port.setClockRate(2000000);
+    port.setMode(SPI.Mode.kMode3);
+    port.setChipSelectActiveLow();
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    // adds data to the write buffer which will be written on the line
+    // because SPI is more free-hand than I2C, what is written or read is dependent on the device we are communicating with
+    byte[] bufferToWrite = "Hello World".getBytes(StandardCharsets.UTF_8);
+    port.write(bufferToWrite, bufferToWrite.length);
+
+    // reads the first 10 bytes in the read buffer
+    byte[] bufferToRead = new byte[10];
+    port.read(false, bufferToRead, bufferToRead.length);
+  }  
+  ...
+}
+```
+
+## Exercises
+
+In these exercise we will be trying to implement code to interface with different devices. These are open-ended exercises, you'll have to read the datasheet of each device and extract the necessary information to provide a theoratically function code which can read data from the sensor and display on the shuffleboard. Each device will be accompanied by what kind of code is expected and additional questions about the device whose answers are present in the device datasheet. These are not easy exercises, but they are well worth it. Read the datasheets carefully.
+
+### Exercise 1 - MB1122
+
+The MB1122 ultrasonic is one of a series of ultrasonics from MaxBotix. [Datasheet](https://maxbotix.com/pages/hrlv-maxsonar-ez-datasheet)
+
+![MB1122](https://github.com/Flash3388/Workshops-2024/assets/17641355/0bea51dc-ec2a-4c09-861d-b5ce34edb25d)
+
+Exercise - read the datasheet and answer the following questions:
+- What is the minimum and maximum ranges of the device?
+- What is the size of the smallest object it can detect?
+- What data interfaces does it have for providing its output?
+- Select one data interface and:
+  - If the sensor is infornt of an object at a distance closer than the minimum range, what output will we get?
+  - If the sensor is infornt of an object at a distance further than the maximum range, what output will we get? 
+  - illustrate to which ports on the roborio would the device be connected. Specify exactly which pins are connected to what.
+  - implement a basic code which periodically reads the distance measured by the sensor and display it on the shuffleboard.
+ 
+ ### Exercise 2 - ADIS16470
+
+ The ADIS16470 is an IMU (Inertial Measurement Unit) with a variety of motion sensors onboard. [Datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/ADIS16470.pdf).
+
+ ![ADIS16470](https://github.com/Flash3388/Workshops-2024/assets/17641355/7b51bf6a-6f16-40bf-a82c-6a97754cc467)
+
+ Exercise - read the datasheet and answer the following questions:
+- What types of sensors does the board contain?
+- What data interface does it use to communicate?
+- How can the device be placed in sleep mode? What effects does it have on the operation of the sensor?
+- Read the chapter on interrupts in the datasheet. What interrupts does it have? How can we make use of them?
+- Illustrate to which ports on the roborio would the device be connected. Specify exactly which pins are connected to what.
+- Implement a basic code which periodically reads the at least 3 values from the sensor and displays it on the shuffleboard. You are free to select which.
+
