@@ -386,3 +386,100 @@ public class Robot extends TimedRobot {
   ...
 }
 ```
+
+### PWM Output
+
+The Pulse-Width Modulation (PWM) output ports are a row of 10 seperate ports in the side of the RoboRIO (opposite to the DIO ports). They are used for generating PWM signals. Each of these ports is numbered (0-9), and this number will be used in our code to access the specific port.
+
+Like the DIO and Analog Input ports, these ports are composed of 3 pin for Signal, VCC and GND.
+
+All the PWM pins are managed by a dedicated clock which is used to properly manage the pulse widths. This allows us to output PWM signals in differing lengths with microsecond precision. The standard period for the clock is 5.05 ms (so the PWM frequency is 198.019 Hz). It is also possible to configure the clock for a 2 times period (10.1ms) or 4 times period (20.2ms).
+
+```java
+public class Robot extends TimedRobot {
+  
+  private PWM port;
+
+  @Override
+  public void robotInit() {
+    port = new PWM(0);
+    port.setPeriodMultiplier(PWM.PeriodMultiplier.k1X); // for 5.05ms period
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    // this sets the PWM to a duty cycle of 50% (5.05*0.5 = 2.525ms = 2525us)
+    port.setPulseTimeMicroseconds(2525);
+  }
+  ...
+}
+```
+#### PWM Pulse Bounds
+
+For controlling PWM motor controllers, we need to define a set of bounds which define the meaning of pulse widths compared to their effect on the motor.
+FRC PWM motor controllers generally operate by spliting the period into three discrete parts: center = no motion on the motor, max = maximum forward motion (clockwise at 12V) (max because it is the longest pulse width), min = maximum negative motion (counter-clockwise at 12V) (min because it is the shortest pulse width).  Depending on the motor controller, these values will differ, but are limited by the period of our PWM clock.
+
+To calculate the pulse width for a wanted PercentVBus value we can use the following pseudu code:
+```
+if output > 0:
+  pulse width = center + |output| * (max - center)
+if output < 0:
+  pulse width = center - |output| * (center - min)
+else:
+  pulse width = center
+```
+
+PWM motor controllers also define a _minimum throttle_. This value indicates the minimum need pulse width change from center to actually have enough power to make the motor move. Values below this will not make the motor spin at all. We may take this value into consideration when performing our calculation. But if we don't, it means that a low enough output will not move the motor at all. This property is also called _deadband_.
+
+#### Example - VictorSP
+
+The VictorSP is a motor controller from CTRE with a PWM input. [Manual](https://store.ctr-electronics.com/content/user-manual/Victor-SP-Quick-Start-Guide.pdf).
+
+![VictorSP](https://github.com/Flash3388/Workshops-2024/assets/17641355/eb60048a-acaa-4209-8967-346c2f7b936b)
+
+The following table describe the properties of the PWM input (taken directly from the manual):
+
+![VictorSP PWM](https://github.com/Flash3388/Workshops-2024/assets/17641355/7c5ce041-758f-4912-96f9-cff9f7e8ea5b)
+
+From this, we can learn a few thing:
+- The motor expect 1 - 2 ms pulse width to control the motor. This can be translated to 1.5ms center, 1ms min and 2ms max.
+- The PWM period must be between 2.9-100ms. Our period is 5.05ms so it is fine. The controller will automatically work with any period in this range.
+- The minimum throttle is 4%, so an absolute output less than 4% will yield no motion.
+
+The following code is a simple control of the VictorSP:
+```java
+public class Robot extends TimedRobot {
+  
+  private PWM port;
+
+  @Override
+  public void robotInit() {
+    port = new PWM(0);
+    port.setPeriodMultiplier(PWM.PeriodMultiplier.k1X); // for 5.05ms period
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    final int CENTER = 1500;
+    final int MAX = 2000;
+    final int MIN = 1000;
+
+    double output = SmartDashboard.getNumber("output, 0);
+    output = MathUtil.clamp(output, 1, -1);
+
+    int pulseWidth = 0;
+    if (output > 0) {
+      int min = CENTER + 1;
+      int max = MAX;
+      pulseWidth = (int) (min + output * (max - min));
+    } else if (output < 0) {
+      int min = MIN;
+      int max = CENTER + 1;
+      pulseWidth = (int) (max - Math.abs(output) * (max - min));
+    }
+
+    port.setPulseTimeMicroseconds(pulseWidth);
+  }
+  ...
+}
+```
