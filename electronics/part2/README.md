@@ -319,4 +319,70 @@ The following code interfaces with this sensor:
 }
 ```
 
+### Analog I/O
 
+The Analog Input ports are a row of 4 seperate ports in the side of the RoboRIO. They are used for reading analog signals. Each of these ports is numbered (0-3), and this number will be used in our code to access the specific port. This ports are all just for analog input. There are analog output pins on the MXP, but we will not discuss them.
+
+![Analog Input Row](https://github.com/Flash3388/Workshops-2024/assets/17641355/37af917e-7703-49f8-b7ca-b1f387e4b54c)
+
+Like with the DIO ports, each port in the row is made up of 3 seperate pins: 
+- The signal pin (top) for the analog signal 
+- The VCC pin (second) for 5V power connection
+- The GND pin (bottom) for Ground connection
+
+![Port pins](https://github.com/Flash3388/Workshops-2024/assets/17641355/e86dd32c-a0f0-4036-b092-fc8f4882e04c)
+
+Each of the pins is connected to and ADC (Analog to Digital Converter) with a 12 bit resolution. The voltage range is 0V to 5V so this maps to a range of 0 to 4095 values from the ADC. So each 1 value means a change of 1.2 mV, so 1 = 1.2 mV, 2 = 2.4 mV and so on. Though the effective resolution of the port is 50 mV, meaning we will only see a change of 50 mV. So after 0, the next value we can expect is 42. This effects our ability to measure data from sensors. Calculating the voltage from the ADC is a simple matter: $voltage = {value \over 4096} * 5$.
+
+The ADC has a 500 KS/s sampling rate. That is 500,000 samples per second. That is 2 samples per 1us, so if the voltage changes, it will take 500ns to see that change.
+
+Accessing the data is as straight-forward as digital input is:
+```java
+public class Robot extends TimedRobot {
+  
+  private AnalogInput input;
+
+  @Override
+  public void robotInit() {
+    // 1 refers to port number 1
+    input = new AnalogInput(1);
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    int value = input.getValue();
+    // or we can use getVoltage which converts the value to voltage
+    double volts = input.getVoltage();
+  }
+  ...
+}
+```
+
+#### Example - Analog Acceleremoter
+
+The ADXL193 is a single-axis accelerometer which uses an analog output to report on its measurements. [Datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL193.pdf). It is intended for detection of collision, which involves high acceleration values, with a range of up to 250G acceleration. Because the acceleration is measured on an axis, the acceleration can either be negative or positive, depending on the direction of the acceleration.
+
+It requires 2-5V and up to 2mA power supply, so it can be powered by the port's VCC and GND pins.
+
+![ADXL193 wiring](https://github.com/Flash3388/Workshops-2024/assets/17641355/89ec316d-650c-400b-90a5-da1a9fd7ff8f)
+
+Its output for 0 acceleration is 2.5V on the analog pin. This is the zero point to diffrentiate between negative or positive acceleration. That leaves a range of 2.5V for positive and negative acceleration. Each G of acceleration is a change of 8mV on the line. So for +1G acceleration, the voltage on the line will be 2.508V. However, we do have a problem, because the accuracy of our ports is 50mV, meaning we can only see a change of 6.25G from the input. This is a problem between the sensitivity of the sensor and the capabilities of the device. But it is also somewhat a non-issue, because the sensor is meant for high-acceleration detection, which means that its use is for high changes in acceleration, which we will be able to detect. That is why it is so sensitive. But we need to understand this when working with the sensor so we don't use it in ways its not meant to be used.
+
+```java
+public class Robot extends TimedRobot {
+  
+  private AnalogInput input;
+
+  @Override
+  public void robotInit() {
+    input = new AnalogInput(0);
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    double volts = input.getVoltage();
+    double accelerationG = (volts - 2.5) / 0.008;
+  }
+  ...
+}
+```
