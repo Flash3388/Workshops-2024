@@ -270,6 +270,8 @@ To take a measurement, the sensor expects to receive a 10us (10 microsecond) pul
 
 Once measurement is started, the echo pin is changed to HIGH. This is left HIGH until the sound wave returns to the sensor. When it does, the pin is changed back to LOW. This effectively creates a pulse which starts when the sound wave is sent and ends when the sound wave returns. So its length will be equal to the time it took the sound wave to go from the sensor to the object and then back. So to calculate the distance, we need to measure the length of the pulse and then calculate the distance via the following formula: $distance \ meters = {speed \ of \ sound \over pulse \ length} = {340 \ meters \ per \ second \over pulse \ length \ seconds}$. To measure the pulse length with can use a counter in semi period mode.
 
+The gif below is what's called the timing diagram. It shows the timing of voltages on the trigger and echo lines.
+
 ![HC-SR04 timing](resources/hcsr04-timing.gif)
 
 The following code interfaces with this sensor:
@@ -296,13 +298,14 @@ The following code interfaces with this sensor:
   @Override
   public void teleopPeriodic() {
     if (isPulseSent) {
-      // send a pulse to start measurement
+      // send a pulse to start measurement. reset the counter.
       isPulseSent = true;
+      counter.reset();
       trigPort.pulse(1e-5);
     } else {
       // pulse was sent, wait for it to return
-      if (counter.get() % 2 == 0) {
-        // if the counter has counted an even number of pulses, than we know it counted both the rising edge and falling edge of the pulse.
+      if (counter.get() >= 2) {
+        // if the counter has counted two edges, than we know it counted both the rising edge and falling edge of the pulse.
         // that means that a full pulse has been received, so we can read its length 
         double lengthSeconds = counter.getPeriod();
         double distanceM = 340.0 / lengthSeconds;
