@@ -261,8 +261,10 @@ Like all ultrasonics, it trasmits a sound wave, which then impacts the object in
 The sensor has 4 pins:
 - VCC: connection for power supply for the sensor. It requires 5V voltage and 15 mA current. Can be provided from the VCC connection on the DIO port.
 - GND: ground connection of the power supply. Can be provided from the GND connection on the DIO port.
-- TRIG: trigger signal line. This line is used to tell the sensor when to measure the distance.
-- ECHO: echo signal line. This line is used to tell us about the measurement of distance.
+- TRIG: trigger signal line. This line is used to tell the sensor when to measure the distance. Requires a signal pin on a DIO port.
+- ECHO: echo signal line. This line is used to tell us about the measurement of distance. Requires a signal pin on a DIO port.
+
+Because the VCC and GND pins are all connected, all we need is to connect to one of those. Despite us using two different signal pins.
 
 ![HC-SR04 Pinout](https://github.com/Flash3388/Workshops-2024/assets/17641355/ea545dbb-0844-4c6d-ae94-3a98e72d5d9b)
 
@@ -389,7 +391,7 @@ public class Robot extends TimedRobot {
 
 ### PWM Output
 
-The Pulse-Width Modulation (PWM) output ports are a row of 10 seperate ports in the side of the RoboRIO (opposite to the DIO ports). They are used for generating PWM signals. Each of these ports is numbered (0-9), and this number will be used in our code to access the specific port.
+The Pulse-Width Modulation (PWM) output ports are a row of 10 seperate ports in the side of the RoboRIO (opposite to the DIO ports). They are used for generating PWM signals. Each of these ports is numbered (0-9), and this number will be used in our code to access the specific port. Note that these ports are only for output. For input of PWM, simply use a normal Digital input port.
 
 Like the DIO and Analog Input ports, these ports are composed of 3 pin for Signal, VCC and GND.
 
@@ -481,6 +483,109 @@ public class Robot extends TimedRobot {
     }
 
     port.setPulseTimeMicroseconds(pulseWidth);
+  }
+  ...
+}
+```
+
+This logic is actually already implemented for us, with the use of `port.setBoundsMicroseconds` and `port.setSpeed`:
+```java
+public class Robot extends TimedRobot {
+  
+  private PWM port;
+
+  @Override
+  public void robotInit() {
+    port = new PWM(0);
+    port.setBoundsMicroseconds(2000, /*max deadband*/1520, 1500, /*min deadband*/1480, 1000);
+    port.setPeriodMultiplier(PWM.PeriodMultiplier.k1X); // for 5.05ms period
+
+    SmartDashboard.putNumber("output", 0);
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    double output = SmartDashboard.getNumber("output", 0);
+    output = MathUtil.clamp(output, 1, -1);
+    port.setSpeed(output);
+  }
+  ...
+}
+```
+
+### I2C
+
+Unlike the previous ports we've discussed, the I2C port is made up of 2 signal connections (one for SDA and one for SCL). It is essential to connect them properly, connecting the wires to the wrong pins will not work.
+
+![I2C port](https://github.com/Flash3388/Workshops-2024/assets/17641355/36ed4b95-501d-4531-a855-1b4444fd6db6)
+
+There is actually another set of I2C pins, in the MXP header.  
+
+> [!WARNING]
+> The main I2C port on the RoboRIO 1 has a software problem which can lead to system lockup. Avoid using. Using the MXP pins is fine.
+
+Because of the complexity of the protocol, it is actually managed by the hardware. All we need to do with it is simply write and read data. But we don't read/write directly to the wires, but rather we work with a set of buffers which are connected to the hardware. When we wish to write, we write into the write-buffer which is then written to the line by the hardware. Same thing for reading: when new data arrives it is stored in the read-buffer and then we can read from that buffer.
+
+```java
+public class Robot extends TimedRobot {
+  
+  private I2C port;
+
+  @Override
+  public void robotInit() {
+    // open a handle to the I2C hardware which allows read/write with device address=0x22
+    port = new I2C(I2C.Port.kOnboard, 0x22);
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    // read two adjacent registers: 0x20, 0x21
+    // this sends a request to read the registers and receives the data about them.
+    int startRegister = 0x20;
+    byte[] buffer = new byte[2];
+    port.read(startRegister, 2, buffer);
+
+    // write to register 0x24 with the value 11
+    port.write(0x24, 11);
+  }
+  ...
+}
+```
+
+#### Example - ADXL345
+
+The ADXL345 is a 3-axis accelerometer which uses I2C to communicate. [Datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/adxl345.pdf).
+Connecting it is straight forward: just connect the SDA and SCL from the device to the RoboRio. However, if there are multiple devices, the lines have to be connected to all of them, so it will have to be splited.
+
+Power also must be provided, it requires 2V - 3.6V and 140uA. This can be provided from the VCC and GND from one of the other ports, however, it must be done with a resistor since they provide 5V.
+
+![ADXL345 pinout](https://github.com/Flash3388/Workshops-2024/assets/17641355/4afe924d-e423-4ccb-834e-70c98f0a817f)
+
+The device has an address of `0x1D` with the following register map:
+
+![ADXL345 register map](https://github.com/Flash3388/Workshops-2024/assets/17641355/dfa85cdb-219e-4b81-98c1-bb1a547741b1)
+
+We'll demonstrate reading the X-axis acceleration value. You can see it is made up of 2 registers `DATAX0` (0x32) and `DATAX1` (0x33). `DATAX0` contains the least significant byte, while `DATAX1` contains the most significat byte. Together, these registers compose a 2-byte value. Each 256 values represent a full 1 G acceleration. So 256 = 1G, 512 = 2G. We'll have to actively request to read those registers to receive an update on their value.
+
+```java
+public class Robot extends TimedRobot {
+  
+  private I2C port;
+
+  @Override
+  public void robotInit() {
+    port = new I2C(I2C.Port.kOnboard, 0x1D);
+  }
+  ...
+  @Override
+  public void teleopPeriodic() {
+    byte[] buffer = new byte[2];
+    port.read(0x32, 2, buffer);
+
+    // java uses Big Endian, with the most significat byte stored lower in memory and the least stored in upper memory.
+    // so we shift the byte 8 bits to place it in the upper 8 bits of memory.
+    int lsb = (buffer[0] << 8) | buffer[1];
+    double accelerationG = lsb / 256.0;
   }
   ...
 }
