@@ -456,6 +456,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     port = new PWM(0);
     port.setPeriodMultiplier(PWM.PeriodMultiplier.k1X); // for 5.05ms period
+
+    SmartDashboard.putNumber("output", 0);
   }
   ...
   @Override
@@ -464,7 +466,7 @@ public class Robot extends TimedRobot {
     final int MAX = 2000;
     final int MIN = 1000;
 
-    double output = SmartDashboard.getNumber("output, 0);
+    double output = SmartDashboard.getNumber("output", 0);
     output = MathUtil.clamp(output, 1, -1);
 
     int pulseWidth = 0;
