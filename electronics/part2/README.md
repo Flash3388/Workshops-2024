@@ -565,7 +565,14 @@ The device has an address of `0x1D` with the following register map:
 
 ![ADXL345 register map](https://github.com/Flash3388/Workshops-2024/assets/17641355/dfa85cdb-219e-4b81-98c1-bb1a547741b1)
 
-We'll demonstrate reading the X-axis acceleration value. You can see it is made up of 2 registers `DATAX0` (0x32) and `DATAX1` (0x33). `DATAX0` contains the least significant byte, while `DATAX1` contains the most significat byte. Together, these registers compose a 2-byte value. Each 256 values represent a full 1 G acceleration. So 256 = 1G, 512 = 2G. We'll have to actively request to read those registers to receive an update on their value.
+We'll demonstrate reading the X-axis acceleration value. You can see it is made up of 2 registers `DATAX0` (0x32) and `DATAX1` (0x33). `DATAX0` contains the least significant byte, while `DATAX1` contains the most significat byte. Together, these registers compose a 2-byte value. Each 256 values represent a full 1 G acceleration. So 256 = 1G, 512 = 2G. This is true for the 2G mode (meaning a max of 2G acceleration is measured). 
+
+![ADXL345 axis registers description](https://github.com/Flash3388/Workshops-2024/assets/17641355/aa99ac8b-2d12-45ed-8ea2-946d4bac44c3)
+
+![ADXL345 sensitivity](https://github.com/Flash3388/Workshops-2024/assets/17641355/9e7de715-8cf5-42f6-a69f-8c30e0c555d6)
+
+
+We'll have to actively request to read those registers to receive an update on their value.
 
 ```java
 public class Robot extends TimedRobot {
