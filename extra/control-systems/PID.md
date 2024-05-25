@@ -263,6 +263,12 @@ With a properly configured $K_d$, a $K_p$ which produces oscillations can be smo
 
 ![oscillation fixes](https://github.com/Flash3388/Workshops-2024/assets/17641355/aa383575-fb8a-4532-af73-82fc7d54eaa9)
 
+The D component is also very susceptible to sensor noises. Sensor noise is common, and creates jumps in the _process variable_ over time. These jumps cause the velocity of the error to increase significantly at the point of noise, due to the rapid changes of the _process variable_. As such, the D output will increase violently in response to these noises, making it difficult to use. If sensor noises are a serious problem, avoid using D at all, or minimize the _gain_ as much as possible.
+
+![noisy pv](https://github.com/Flash3388/Workshops-2024/assets/17641355/3e58b9cf-6e56-45ba-b549-d148e5634747)
+
+The jumps in the _process variable_ function graph are noises which change the value of the sensor back and forth.
+
 ### Putting it all Together
 
 On their own, I and D are pretty useless, and P doesn't provide the best response usually. The entire point of PID is utilizing the different components together to acheive an ideal response. But it is not a must, some systems can use only P, only P + D, only P + I, or all of P + I + D. The choise is ours. The choise of what to use should generally be done during the calibration after seeing what kind of response each component provides for the system. 
