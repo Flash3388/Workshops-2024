@@ -688,6 +688,10 @@ Smart motor controllers can also be configured with a current limit. This limits
 - [FRC Docs - Intro to PID](https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/introduction-to-pid.html#introduction-to-pid)
 - [FRC Docs - PIDController](https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/pidcontroller.html)
 - [FRC Docs - Common Control Loop Tuning Problems](https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/common-control-issues.html)
+- [FRC Docs - DC Motor FeedForward](https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/introduction-to-feedforward.html)
+- [Omega Engineering - PID](https://www.wevolver.com/article/pid-loops-a-comprehensive-guide-to-understanding-and-implementation)
+- [I Explained](https://medium.com/luos/pid-the-i-as-in-integral-4390c71db12e)
+- [D Explained(https://medium.com/luos/pid-d-as-in-derivative-6a022a82a62e)
 
 It is also highly recommended to try out the tuning simulations in the FRC docs:
 - [Tutorial](https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/tutorial-intro.html)
