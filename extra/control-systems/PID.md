@@ -31,7 +31,7 @@ This kind of relationship is essential for a control loop, without an ability to
 
 We typically use a graph of the _Process Variable_ over time as a way to observe and describe the behaviour of our system. The graph below shows the process variable over time as we attempt to correct it to the setpoint.
 
-![pv over time](https://github.com/CANBUS-9740/Training-2024/assets/17641355/36b8797e-d647-400f-8aa4-ad5ddd8d9a4e)
+![pv over time](https://github.com/Flash3388/Workshops-2024/assets/17641355/476e6151-4565-4fd7-a954-b86507bf186c)
 
 We can divide the graph into a few parts:
 - _rise time_ is the time it takes us to first reach the set point. We aim for this time to be as small as possible as to reach our goal fast.
@@ -45,7 +45,7 @@ as long as the values are consistent: all the values refer to the same state of 
 
 Open loop control is the most basic form of control over a system. It can be considered as dumb or static, as it has no true knowledge of the real state of the system. Instead, this form of control makes an assumption about the operation of the system and its state to perform an action. This kind of control is also called feed-forward, as we feed the system before knowing anything about its state.
 
-![open loop](https://github.com/CANBUS-9740/Training-2024/assets/17641355/63fecaab-1504-407d-9083-b8457d73deaa)
+![open loop](https://github.com/Flash3388/Workshops-2024/assets/17641355/5d81dc51-d979-4f7f-a4b0-578f48b0e17f)
 
 Such control loops depend on knowing (or discovering) the relationship between the output and the controlled state. By knowing the relationship, we can calculate ahead what output is necessary to reach a specific state.
 
@@ -57,7 +57,7 @@ According to the specs of a _NEO 1.1_, this relationship is
 
 $$speed = {output \ voltage * 5675 \over 12 \ V}$$
 
-![neo 1.1 specs](https://github.com/CANBUS-9740/Training-2024/assets/17641355/0d6871c2-7c0f-4c55-8075-fa15147f0d68)
+![neo 1.1 specs](https://github.com/Flash3388/Workshops-2024/assets/17641355/6e0ad831-aaa4-4be4-b902-bb73724e1751)
 
 We can then flip the equation to calculate the output to get a desired speed
 
@@ -108,7 +108,7 @@ public class RotateMotor extends Command {
 
 Closed loop control is generally seen as a smart type of control. It uses sensors (feedback source) to operate the system into a desired state, instead of just relying on calculation. This allows it to perform percise tasks that involve outside, unpredicted variables affecting our system. This control is also called _feedback_ because we rely on a feed source (sensor) and react acording to it.
 
-![closed loop](https://github.com/CANBUS-9740/Training-2024/assets/17641355/12f342ee-538c-4558-a95d-c6a0927ec1ef)
+![closed loop](https://github.com/Flash3388/Workshops-2024/assets/17641355/ac3ebe04-8232-462b-b3c6-0ed83794db6d)
 
 The goal of feedback control can be simplified as _reaching an error which is as close to 0 as possible_. The error is described as the difference between the _set point_ and the _process variable_. It does so by periodically checking the sensor value to see what the current error is, and changes the output so to decrease that error. 
 
@@ -146,7 +146,7 @@ This is a time based function, based on the $e(t)$ (error) function. For each ti
 
 Our aim with PID is to drive the output such that we, in the end, reach an error which is as close to 0 as possible. This nets an $e(t)$ function which follows the behaviour below:
 
-![e(t) wanted](https://github.com/CANBUS-9740/Training-2024/assets/17641355/dc97b28e-812d-4dde-a428-65898868be27)
+![e(t) wanted](https://github.com/Flash3388/Workshops-2024/assets/17641355/50ec2272-af8c-4367-b310-4d25339f8c8a)
 
 Of course, in reality, we may not actually get this result, as it depends on the system and how we use PID, but this is an ideal behaviour.
 
@@ -161,10 +161,9 @@ The actual meaning of the output value is dependent on what we decide. At its co
 
 The value of $e(t)$ can also be negative. This occurs when the value of the _process variable_ is bigger than the value of the _set point_. This is completely normal and can be seen in several situations. One case if when we start with a _process variable_ which is bigger than the _set point_. Consider an elevator which starts in the 3rd floor and needs to get to the 2nd floor, the height of the elevator is bigger than the destination. Another situation is when, during our control loop, we miss the _set point_, so the _process variable_ can become bigger than the _set point_ and we know have to correct the system back to the _set point_. In a case of a negative $e(t)$ we would get a negative output, which is fine, as it indicates we need to move in a different direction (say, down). It can also work well with our motors, as negative or positive signs indicate the direction of motion.
 
-![pv above sp](https://github.com/CANBUS-9740/Training-2024/assets/17641355/f5fcae46-6c49-41ee-ac19-8c05bafb6aa7)
+![pv above sp](https://github.com/Flash3388/Workshops-2024/assets/17641355/0bb88a27-5f77-4198-85ef-b5715f468b90)
 
-![set point miss](https://github.com/CANBUS-9740/Training-2024/assets/17641355/a3706052-b85d-4b56-be47-31f0d3540233)
-
+![set point miss](https://github.com/Flash3388/Workshops-2024/assets/17641355/a5452814-6ce6-4622-ad71-0f14491ce9b7)
 
 In our code, we work with a 20ms loop. That means we can only run the pid calculation every 20 ms. This creates a discrete time system rather than a continous one. So the formula above is normally implemented as such:
 
@@ -180,7 +179,7 @@ The porportional component of PID produces an output based on a porportional res
 
 The meaning of the output of this components is tied directly to the values used in $e(t)$. If we work on a system's velocity in RPM, the output of $e(t)$ will be the error in RPM between the _set point_ and _process variable_ (say `2000 RPM`). This of course, is not a value we can use for a motor. So for that we have the _gain_.
 
-![pv and p](https://github.com/CANBUS-9740/Training-2024/assets/17641355/9395d84c-a09c-4e1d-b5ed-d8e22594c329)
+![pv and p](https://github.com/Flash3388/Workshops-2024/assets/17641355/c0e1337c-a0e2-422f-86aa-b67bb7c44762)
 
 $K_p$ is the _gain_ which controls the size of the output relative to the error. We use the gain to scale and configure our response to errors. The larger the gain, the larger the output will be in proportion to the error. So, say $e(t) = 2000$, with $K_p=0.0001$, we get an output of $0.0001 * 2000 = 0.2$. This is a more apropriate output to a motor (its between `-1` and `1`). 
 
@@ -192,11 +191,11 @@ The actual value we choose for $K_p$ is key in acheiving great results.
 
 When the value of $K_p$ is too low, it will cause a system to take much longer to reach the wanted system. Further more, when we have a small error, the output from this component may be so low that the system will not continue moving, getting us stuck at a state which is close to the _set point_ but not exactly at the _set point_. This is called a _steady state error_, i.e. the system is steady, but it is not at the _set point_
 
-![steady state error](https://github.com/CANBUS-9740/Training-2024/assets/17641355/d2f1f7c5-79ce-41e3-a68b-fbf204bf990e)
+![steady state error](https://github.com/Flash3388/Workshops-2024/assets/17641355/36422e56-b491-4ca4-9fee-01f9ea6f8713)
 
 When the value of $K_p$ is too high, it will cause a system to reach the _set point_ faster, but it will also make it miss the _set point_. Furthermore, when we do miss and the output turns negative in order to return back to the _set point_, we will likely miss the _set point_ again because the output is too high. This causes a pattern of oscillation around the _set point_. The oscillation may stabilize in time, but it may not, depending on the system and the $K_p$
 
-![oscillation](https://github.com/CANBUS-9740/Training-2024/assets/17641355/231da666-abce-457c-9928-37b369e500f9)
+![oscillation](https://github.com/Flash3388/Workshops-2024/assets/17641355/b2d86fd5-564f-42b7-b99a-c311ef1cad14)
 
 So we must work to find the best $K_p$ for our system. And it really is system specific, due to a combination of the mechanics, the motors, what forces are at work and more. To find the best value
 we perform a set of calibrations for the system, which we will discuss later.
@@ -207,7 +206,7 @@ $$K_i * \int_0^t e(T) \mathrm{d}T$$
 
 The integral component of PID produces an output based on an integral response to $e(t)$. an integral of a function is basically the area between the function and the `x` axis between two points. In the error function, this translates into the sum of all the errors between point `0` and the current time point. 
 
-![area of error function](https://github.com/CANBUS-9740/Training-2024/assets/17641355/27485afb-740c-4afb-8394-fe4468d0cbd8)
+![area of error function](https://github.com/Flash3388/Workshops-2024/assets/17641355/5efceac3-1c69-4a3e-8dee-1e049efab494)
 
 In essense, what it means is that the value of this component is basically the sum of all the errors from the start until the current time. As such, we can look at this component as acting on past errors of the system. For a discrete system we will represent this component as:
 
@@ -219,11 +218,11 @@ For a flywheel, with $SetPoint = 1000, Initial \ ProcessVariable = 0$, the outpu
 
 In a _process variable_ graph, the I value can be seen as the area between the function and the _set point_
 
-![pv graph integral area](https://github.com/CANBUS-9740/Training-2024/assets/17641355/8fb590a8-389f-4b55-8857-752ce7c5d87f)
+![pv graph integral area](https://github.com/Flash3388/Workshops-2024/assets/17641355/48a7271f-68f2-4708-8445-53a2ddf40f3b)
 
 It worth noting that this component can become negative, like $e(t)$. However, because it is the sum, when $e(t)$ becomes negative, the integral does not imediatly become negative, as it is a total sum of the errors. For it to be negative, the sum of errors when $e(t)$ is negative must be bigger than when $e(t)$ was positive. In other words, the area where the _process variable_ is above _set point_ must be bigger than the area where it was below. So, when we first miss the _set point_, the integral output is still positive, the more time we spend above the _set point_ the smaller the total error becomes as more negative errors are added until it becomes zero and starts becoming negative.
 
-![pv and integral](https://github.com/CANBUS-9740/Training-2024/assets/17641355/f7f00f13-34c6-4768-9d5e-b9eb981bb501)
+![pv and integral](https://github.com/Flash3388/Workshops-2024/assets/17641355/bbf35f91-c0ff-44aa-8257-9b5112710816)
 
 $K_i$ is the _gain_ which controls the size of the output relative to the integral. We use the gain to scale and configure our response to errors. The larger the gain, the larger the output will be in proportion to the integral, same as with $K_p$ but operating with a different kind of output.
 
@@ -231,7 +230,7 @@ We can quite quickly see why a large $K_i$ can cause problems. Because of the la
 
 Of course, even if we wish to use this for handling steady-state errors, we still end up with the accumulation of all errors. This makes windup harder to avoid, forcing us to use such a small $K_i$ that it barely has any effect on steady state errors. To solve this, most _PID_ controllers use an _IZone_. _IZone_ is defined as a range around the _set point_ at which the I component is actually used. As long as the error is bigger than this _IZone_, the error accumulator is set to `0`. When the error is within the zone, only than is error accumulated. This let's us define an area for handling steady-state errors without dragging old errors into the mix. The value of _IZone_ should use the same measurement units as the _process variable_. With a _set point_ at `5000`, and _IZone_ of `500` will start using I between `4500` and `5500`.
 
-![image](https://github.com/CANBUS-9740/Training-2024/assets/17641355/dc4a9bb2-9f29-4751-8128-802df9813caf)
+![izone use](https://github.com/Flash3388/Workshops-2024/assets/17641355/982581e7-8bda-4a11-961e-cf5a45c1e2c1)
 
 Notice how in the graph above, inside the IZone, after the second miss we get a steady state error which is slowly being fixed thanks to our I component in the works.
 
@@ -241,7 +240,7 @@ $$K_d * \frac{d e(t)}{dt}$$
 
 The derivative component of PID produces an output based on an derivative response to $e(t)$. A derivative of a function is a function which represents the slope of the original function, or in other words, it represents the rate of change of the original function. So for function $e(t)$, a derivative over time is $\frac{d e(t)}{dt}$, so its value for point _t_ is the rate at which $e(t)$ has changed over time. 
 
-![slope of error point](https://github.com/CANBUS-9740/Training-2024/assets/17641355/467e5091-7310-4033-8edc-e4aebfbed54f)
+![slope of error point](https://github.com/Flash3388/Workshops-2024/assets/17641355/5a05df7c-f0d5-4661-b472-71380670782d)
 
 In essence, this means that the value from this component is the rate of change of the error (its velocity) at a time point. For a discrete system we will represent this component as for time point _n_:
 
@@ -251,9 +250,8 @@ Implementations of PID generally implement the D component as `currentError - la
 
 The output from the D component is always going to be opposite to the outputs of P and I (in terms of sign). This is because it is the change rate of the error, so for a decreasing error, the D output will be negative, and for increasing error, the output will be positive. Due to this opposite sign, the D components basically decreases the absolute output from the P and I components, hence slowing the response down. 
 
-![error + D](https://github.com/CANBUS-9740/Training-2024/assets/17641355/a4d1c616-af79-46b9-bdb8-6abe14badcb0)
-
-![pv + D](https://github.com/CANBUS-9740/Training-2024/assets/17641355/7902a614-d5de-4fa9-8ce4-a86147156782)
+![error + D](https://github.com/Flash3388/Workshops-2024/assets/17641355/40601dc8-7bdd-4a44-8e81-dc317af472a1)
+![pv + D](https://github.com/Flash3388/Workshops-2024/assets/17641355/fbbb7233-24fa-459c-b781-645e99b9ac13)
 
 Because the _set point_ is generally constant, the D response can actually be seen as the negative rate of change of the _process variable_. So for a position _process variable_, D will be the negative velocity. For a velocity _process variable_, D will be the negative acceleration.
 
@@ -263,7 +261,7 @@ A large $K_d$ will slow down the entire response of the system as it will negate
 
 With a properly configured $K_d$, a $K_p$ which produces oscillations can be smoothed out over time
 
-![oscillation fixes](https://github.com/CANBUS-9740/Training-2024/assets/17641355/e3d17113-3f26-4485-b82e-f5db321873d3)
+![oscillation fixes](https://github.com/Flash3388/Workshops-2024/assets/17641355/aa383575-fb8a-4532-af73-82fc7d54eaa9)
 
 ### Putting it all Together
 
@@ -286,7 +284,7 @@ We sometimes also have to make a trade between speed and accuracy. We usually wa
 
 An important part of PID is also its ability to handle unexpected (or expected) external forces, temporary or not. A sudden outside effect will introduce an error, but PID will work to correct that error. Consider a shooter shooting balls. When the ball passes through the shooter, it creates friction and a loss of speed with the _process variable_ dropping. This will be fixed though, with the velocity returning to the _set point_ again thanks to PID output correction. So if we have to fire multiple balls one after another at a specific speed, PID will keep us at that speed.
 
-![external force](https://github.com/CANBUS-9740/Training-2024/assets/17641355/c48ed40b-048b-47d7-9c34-fab923d60499)
+![external force](https://github.com/Flash3388/Workshops-2024/assets/17641355/ef4fb5fb-f11d-4c6c-a8c2-304792776f19)
 
 ### WPILib's PID Controller
 
@@ -346,7 +344,7 @@ There isn't one specific answer, as it depends on which system we work with and 
 
 Normally we would want to stop when $e(t) = 0$, with a possibility for margin of error if accuracy isn't essential. However, observing just the error or the process variable isn't actually good enough, as consider the following motion graph:
 
-![stopping pv](https://github.com/CANBUS-9740/Training-2024/assets/17641355/7b3b9e49-f8f8-4410-8f78-b119cd77d1e3)
+![stopping pv](https://github.com/Flash3388/Workshops-2024/assets/17641355/67a98c78-2eb6-4ca6-a100-4691f7edad27)
 
 Notice how $e(t)$ reaches 0 at several moments, but it continues moving. This is due to several misses. If we were to stop at one of those points with the misses, we would miss our _set point_ due to the inertia of the system. In order to know when we've actually settelled on, we should also take a look at the velocity of the $e(t)$. When this velocity is close to zero, than we have minimal inertia and will thus stop on the _set point_ as wanted. So our stop condition should be something like $e(t) < margin; \frac{de(t)}{dt} < margin$. `PIDController` actually provides us with some utility for checking this condition:
 
@@ -410,7 +408,7 @@ For some systems, we will find ourselves required to apply continous output for 
 
 The problem with feedback control, is that it works upon the error. When we reach the _set point_ and $e(t) = 0$ the proportional output will be basically 0, and thus our output will likely be minimal. This means that nothing is going to keep our system at the _set point_ if there is an external force applied to it. This can be a pretty big problem for systems that require a continous output. We may use the I component to keep some output by depending on the error accumulated before we reached the _set point_, but it's not really consistent. In reality, what will happen is that the external force will move the system and introduce a new error to the system which the control loop will notice and correct. So we'll get stuck in a loop of reaching the _set point_, losing the _set point_ and returning to it. Depending on the system and our _gains_, this main be unnoticable because our control loop will react after a max of 20ms and can be quite quick to zero out the error.
 
-![error fixing](https://github.com/CANBUS-9740/Training-2024/assets/17641355/d19c3ea5-2c7f-43bc-8351-08de80ffbc89)
+![error fixing](https://github.com/Flash3388/Workshops-2024/assets/17641355/bcad236e-dcb9-410d-a58b-861266c42432)
 
 Other kinds of systems that require constant output are:
 - arm: an arm usually has to fight gravity which attempts to pull it back down
@@ -426,7 +424,7 @@ Consider a drone, it uses PID to keep itself stable in the air, but it also rece
 
 The change is _set point_ can have quite a big influence on our control loop, as at the moment of change, $e(t)$ will jump in value according to the new _set point_, and as such, the different components will react to this sudden change.
 
-![set point change](https://github.com/CANBUS-9740/Training-2024/assets/17641355/1a4f3718-d2b2-4b7c-a8ae-91209736a3e3)
+![set point change](https://github.com/Flash3388/Workshops-2024/assets/17641355/8c9c30c1-354e-4f8d-a77f-2a7e5eb9eb58)
 
 The P component will react pretty normally, as it just looks at the current $e(t)$. The I component will carry on all the accumulated errors so far into the motion to the next _set point_, this can influence the response, mostly by causing a windup due to the sudden additions of new errors. The D component will react the most violently, as essential, at the point of _set point_ change, its output will be magnified significantly depending on the new _set point_. We can look at it as following
 
@@ -446,11 +444,11 @@ Before we can tune, we must first try to understand what is considered and ideal
 
 The following examples show case acceptable responses
 
-![ideal response 1](https://github.com/CANBUS-9740/Training-2024/assets/17641355/4309b161-b07b-495b-b791-c693396b62ca)
+![ideal response 1](https://github.com/Flash3388/Workshops-2024/assets/17641355/58b0e2db-687e-48c5-9af3-08e5d4ac1aa6)
 
-![ideal response 2](https://github.com/CANBUS-9740/Training-2024/assets/17641355/4876c20d-3c5f-429d-a2ae-ee85355840b3)
+![ideal response 2](https://github.com/Flash3388/Workshops-2024/assets/17641355/a188399e-fc52-4465-b985-397d768a97b2)
 
-![ideal response 3](https://github.com/CANBUS-9740/Training-2024/assets/17641355/b96ba804-16cc-4e6d-ae48-1fb2b8d69971)
+![ideal response 3](https://github.com/Flash3388/Workshops-2024/assets/17641355/9edcd7d2-bece-43f9-b986-43aa9338253a)
 
 There are several different approaches to this, but we will be taking the most basic approach for now. In order to tune, we must observe the state of the machine in real time and be able to modify the _gains_ we we do so. To do this, we will be using the _shuffleboard_ to place information and view this information. We'll be using the _test_ mode for this one, as its really basic and can allow us to quickly write the PID loop code into it and be able to test it without needing to run any commands.
 
@@ -483,7 +481,7 @@ public void testPeriodic() {
 
 By using the `Robot` instead of command, we can have a skeleton code which runs always, this makes it easier to work with instead of having to modify and mess with commands. This code is also temporary and should be deleted later on. The use of the _test_ mode is because _teleop_ and _autonomous_ are likely used to run different things, as they have in competition use, which _test_ mode doesn't have. Run the code and configure your shuffleboard display to follow something like this:
 
-![shuffleboard display](https://github.com/CANBUS-9740/Training-2024/assets/17641355/19bb5bad-d3b5-4926-b728-237f54aaf116)
+![shuffleboard display](https://github.com/Flash3388/Workshops-2024/assets/17641355/5bb56a0d-c646-456b-b66f-5bfdb5ec936c)
 
 You can see we have a view of the _process variable_ and pid output in graphs, plus control over the _gains_, _IZone_ and the _set point_. I recommend using sliders for the _gains_, they make the process a bit easier.
 
@@ -497,7 +495,7 @@ To perform the tuning we will follow these steps:
 7. Twick around with the _gains_ to see if the response can improved any further.
 8. Test different _set points_ and see that the system responds properly.
 
-![shuffleboard example](https://github.com/CANBUS-9740/Training-2024/assets/17641355/f24b63eb-d29b-4155-ac70-4d65bb071f1a)
+![shuffleboard example](https://github.com/Flash3388/Workshops-2024/assets/17641355/43c3c170-7417-4ffa-a36a-940c512e7cb0)
 
 Checkout the _further reading_ section for tuning simulation to try out tuning different systems. Although this are simulations, they should show pretty well how systems respond to the different components.
 
@@ -509,12 +507,11 @@ There are many kinds of feed-forward equations, each useful for different situat
 
 $$K_s * Sign(SetPoint) + K_v * SetPoint$$
 
-![pv feedforward](https://github.com/CANBUS-9740/Training-2024/assets/17641355/8bc520ab-864e-4e16-80b6-18d9ca595073)
+![pv feedforward](https://github.com/Flash3388/Workshops-2024/assets/17641355/ec5aaf6b-1ffa-42a5-882b-de8ea86568b0)
 
 Unlike feedback control, feedforward control is generally more linear due to the constant ouput. And it lacks the ability to fix itself, so the output must be calculated to be precise as misses won't be corrected at all. This simplified the situation and tuning any gains, but also significantly limits the control ability to handle external unexpected forces.
 
-![pv feedforward miss](https://github.com/CANBUS-9740/Training-2024/assets/17641355/b3f1ff2d-aa54-494c-b9bd-8b4399f0ef1f)
-
+![pv feedforward miss](https://github.com/Flash3388/Workshops-2024/assets/17641355/09f3e7ff-5a71-4296-a6ec-33aa33399c16)
 
 ### Static
 
@@ -641,13 +638,13 @@ Velocity loops have a few problems when working strictly with PID. This is due t
 - changing rotation direction while there is still inertia causes current spikes and overheating, which is bad for the motor
 - the change in rotation direction causes a quite strong loss of speed, leading to aggressive misses and oscillations
 
-![pv + output](https://github.com/CANBUS-9740/Training-2024/assets/17641355/041f28aa-a651-45a5-8f86-def8ceb221ff)
+![pv + output](https://github.com/Flash3388/Workshops-2024/assets/17641355/2ad08bfd-8093-4dff-be37-31424b804595)
 
 This does not mean it won't work at all, as changing rotation direction will slow down the rotation until the motor rotates in the opposite direction, but it is too aggressive, causing repeated misses.
 
 For velocity loops to work better, an introduction of feedforward is essential. Using feedforward we can actually drive most of the output in a constant value and use the PID for smaller adjustments. As long as the PID output is smaller than the feedforward output, the total output will not change direction (sign), it will simply decrease or increase. This is a much better option.
 
-![feedback and feedforward](https://github.com/CANBUS-9740/Training-2024/assets/17641355/e2ba7abd-6f99-4efa-9821-d5265212b2ba)
+![feedback and feedforward](https://github.com/Flash3388/Workshops-2024/assets/17641355/84ca6eb5-928b-4837-9112-88620528447d)
 
 ### PIDF
 
