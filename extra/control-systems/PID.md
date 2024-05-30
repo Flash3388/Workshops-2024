@@ -43,7 +43,7 @@ as long as the values are consistent: all the values refer to the same state of 
 
 ### Open Loop
 
-Open loop control is the most basic form of control over a system. It can be considered as dumb or static, as it has no true knowledge of the real state of the system. Instead, this form of control makes an assumption about the operation of the system and its state to perform an action. This kind of control is also called feed-forward, as we feed the system before knowing anything about its state.
+Open loop control is the most basic form of control over a system. It can be considered as dumb or static, as it has no true knowledge of the real state of the system. Instead, this form of control makes an assumption about the operation of the system and its state to perform an action.
 
 ![open loop](https://github.com/Flash3388/Workshops-2024/assets/17641355/5d81dc51-d979-4f7f-a4b0-578f48b0e17f)
 
