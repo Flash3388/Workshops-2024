@@ -507,33 +507,76 @@ Checkout the _further reading_ section for tuning simulation to try out tuning d
 
 ## Feed Forward
 
-Feed forward control is an open control loop, meaning it has no reliance on feedback data, but rather on calculation and the known dynamics of the system to drive the output to the wanted _set point_. This approach may seem less useful than feedback control, however, that is not true at all. There quite a few situations where _feed forward_ is very useful and even necessary. Interestingly, feed-forward output is generally constant over time (or at least over _set point_).
+Feed forward control is a type of control, kinda similar to the concept of open loop control, in such that the output is not dependent on the error of the system, but rather on a mathmetical model of a system. The main purpose of this type of control is to counter or compensate for outside forces such to allow other forms of controls (like open loop or PID) to operate without having to fight these outside forces. One can look at this as an additive equation to our control of output to improve their performance and simplify their calibration. 
 
-There are many kinds of feed-forward equations, each useful for different situations. We will be observing a simple, 2 step equation here.
+Because this mechanism does not use the error of the system, it is not capable of responding to unexpected interference or outside forces affecting the motion of the system. As such it lacks the ability to fix itself, so the output must be calculated to be precise as misses won't be corrected at all. This simplifies the situation and tuning any gains, but also significantly limits the control ability to handle external unexpected forces. However, with a proper equation, it can provide quite great results for specific uses. As such, we will usually see them in conjuction with other control methods.
 
-$$K_s * Sign(SetPoint) + K_v * SetPoint$$
+By saying _mathmetical model_, we basically mean that it depens on some equation which describes the dynamics and properties of how the system and forces act. So before we can use feedforward, we must understand the system and problem we seek to solve, as to come up with a proper equations, which differ between systems. We will see examples for this later.
 
+We can see three normal uses for feedforward control in the FRC:
+- Standalone control use: where the output from the feedforward control is the only driving output of the system. This is kind of using this as an open loop.
+- PID + feedforward: where the output from the feedforward is used to compliment PID by eliminating known forces hampering PID.
+- Base control + feedforward: where the output from the feedforward is used to compliment open loop (basic output, like constant value or similar) control by eliminating known forces hampering the basic control.
+
+Be clear though, that normally, feedfoward control are not meant to be used to reach a certain setpoint, but to counter outside forces. They can be used as such, but it is not their purpose and they can't do this job in most cases because they do not rely on the error of the system, and thus are not capable of correcting it.
+
+So far we've been pretty abstract about what feedforward looks like. This is because feedforward is an umbrella term, like how feedback is an umbrella for control mechanisms, of which PID is a specific example. As such we would be looking at several feed forward equations for different situations.
+
+_reach target example_
 ![pv feedforward](https://github.com/Flash3388/Workshops-2024/assets/17641355/ec5aaf6b-1ffa-42a5-882b-de8ea86568b0)
 
-Unlike feedback control, feedforward control is generally more linear due to the constant ouput. And it lacks the ability to fix itself, so the output must be calculated to be precise as misses won't be corrected at all. This simplified the situation and tuning any gains, but also significantly limits the control ability to handle external unexpected forces.
-
+_miss example_
 ![pv feedforward miss](https://github.com/Flash3388/Workshops-2024/assets/17641355/09f3e7ff-5a71-4296-a6ec-33aa33399c16)
 
 ### Static
 
-$$K_s * Sign(SetPoint)$$
+$$K_s$$
 
-The static component of the feed-forward apply a static output value. That is, once this value is chosen, it is not changed at all. Though it is possible to play around with the sign of the output to change its direction. The value of this component is directly from the $K_s$ _gain_. This makes it quite unique, as usually the _gain_ is a modifier of the output, but that is not the case here. As such, this gain's value should correlate to our output values (-1 to 1 for motors). 
+A static feed forward relies on a constant output in the form of a single gain. This makes it quite unique, as usually the _gain_ is a modifier of the output, but that is not the case here. As such, this gain's value should correlate to our output values (-1 to 1 for motors). Being _static_ once this value is chosen, it is not changed at all. Though it is possible to play around with the sign of the output to change its direction.
 
-Because of the static nature of this output, it doesn't have many uses, as static outputs would generally only be helpful for reaching a specific _set point_. However, it can be quite useful for applying a constant ouput, for combating constant external forces, something that feedback control isn't really good at. So, for example, with an elevator, we can use a static feedforward to keep the elevator in place, by configuring the output to provide enough torque to keep the elevator in place.
+This _static_ output can be added to other control forms to negate constant outside forces. One such example would be to counter gravity for an elevator, where the gravitational force operating on the elevator is generally constant, and as such, requires a constant output from the motor to counter. With a properly selected gain, use of this form of feedforward can keep the elevator in place above the ground. Additionaly, it simplifies other controls of the elevator as we know that the feedforward negates the gravity, so any additional output will be pretty proportional to a motion without gravity. Consider that for a motor moving an elevator without gravity, applying 0.1 will produce a specific speed of motion. When we introduce gravity, this drops the speed due to the gravitational force. But with feed forward, gravity is eliminated again and using an output of 0.1 (and then plus feedforward) we'll get a speed of motion like without gravity. 
+
+PID can handle static external forces by increasing the value of $K_p$ to compensate. However, the output of the P component is dependent upon the error function, which decreasing over time, such the when nearing the _set point_ (or at the _set point_) the output becomes close to 0 (negligible). This is a problem for system that require constant output to keep the system in place, like with out elevator, which has to counter gravity to stay in place. But static feed forward is constant over time, and thus can perform this job well.
+
+We should be aware that constant output to a motor while fighting external forces leads to a motor stall (the motor tries to move, but it is unable to defeat outside forces and thus does not move). Motor stall increases current draw of the motor, creating heat for the motor. So over time, this becomes a problem. 
+
+Finding the proper $K_s$ for a system is usually a process of trial and error, and can be done similarly to tuning PID, by observing graphs of system behaviour and adjusting the gain slowly until a satisfactory one is found.
+
+Note that the $K_s$ gain may be called under different names in different feed forward implementations (like $K_g$ for counter-gravity), but the concept remains the same.
+
+Implementing this in code is usually a simple matter of having a constant added to an output
+```
+public class SomeSystem extends SubsystemBase {
+  public static final double OUTPUT_KS = 0.01;
+  ...
+  public void move(double output) {
+    motor.set(output + OUTPUT_KS);
+  }
+  ...
+}
+```
+
+In the case of an elevator, `output` will be a motion power/speed wanted for the motor when considering no gravity interference, and `OUTPUT_KS` (ks) is an added output meant to eliminate the influence of gravity. In reality the total output for a argument of `output=0.2` will be `0.21` then, giving the system additional power to overcome gravity and still move at a certain speed.
 
 ### Set Point Proportional
 
 $$K_v * SetPoint$$
 
-Another more useful option for feed-forward is actually an output which is proportional to the _set point_. This is great as it provides some flexibility for the output, and thus enables this form of control to actually be capable of driving a system output on its own. For system dynamics with proportional relationship between the output and the controlled state, this is quite perfect.
+Another more useful option for feed-forward is actually an output which is proportional to the _set point_. This is great as it provides some flexibility for the output, and thus enables this form of control to actually be capable of driving a system output on its own. For system dynamics with proportional relationship between the output and the controlled state, this is quite perfect. In reality, this is more of open loop control since it _can_ operate on its own, but we can also use it as feedforward in a way to drive the output as close to the set point as we can without complex PID stuff and then adding to it a basic-to-calibrate PID that does only minimal work to correct small mistakes. 
 
-Actualy, driving a flywheel to a set velocity can be done with _feed forward_ on its own, as, like we've seen, the output voltage and the motor speed are proportional to each other. A properly configured $K_v$ is required for this work though, and actually, this gain is basically the relationship function between the two. Find it is a matter of simply trial and error.
+Because the output is proportional to the _set point_ we get an output which changes as we select different _set points_. This makes this kind of control useful for feed forwards that need to change based on what we want to do, and is typically seen in velocity use. To keep a constant velocity we normally require a constant output of sort, so to reach a motor velocity of, say, 2000 RPM, we need a specific output, which we've seen due to the relationship of motor speed and voltage supply being proportional. So if we control a position of a system and wish to impose a wanted velocity, we may use feed forward to reach said velocity. Actualy, driving a flywheel to a set velocity can be done with this on its own, and with pretty good results, as this utilizes the basic principles of DC motor operations.
+
+```
+public class SomeSystem extends SubsystemBase {
+  public static final double OUTPUT_KV = 0.01;
+  ...
+  public void move(double setPoint) {
+    double output = OUTPUT_KV * setPoint;
+    motor.set(output);
+  }
+  ...
+}
+```
 
 ### WPILib's FeedForward
 
