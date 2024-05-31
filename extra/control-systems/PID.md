@@ -1,4 +1,4 @@
-## Control Loops
+![image](https://github.com/Flash3388/Workshops-2024/assets/17641355/e3bd4bdf-e525-44b0-9025-f2143df7f77b)## Control Loops
 
 When controlling a specific system we generally wish to control a specific set of states of the system in an attempt to change the current state of the system to a very specific state. For arm systems this could be its angle (position), which we try to move such that it is at a specific angle. For an elevator system this could be its height and so forth. This need to exert control over the system can be simple or complex, depending on the system and what we aim to do with it. 
 
@@ -523,9 +523,11 @@ Be clear though, that normally, feedfoward control are not meant to be used to r
 So far we've been pretty abstract about what feedforward looks like. This is because feedforward is an umbrella term, like how feedback is an umbrella for control mechanisms, of which PID is a specific example. As such we would be looking at several feed forward equations for different situations.
 
 _reach target example_
+
 ![pv feedforward](https://github.com/Flash3388/Workshops-2024/assets/17641355/ec5aaf6b-1ffa-42a5-882b-de8ea86568b0)
 
 _miss example_
+
 ![pv feedforward miss](https://github.com/Flash3388/Workshops-2024/assets/17641355/09f3e7ff-5a71-4296-a6ec-33aa33399c16)
 
 ### Static
@@ -578,9 +580,51 @@ public class SomeSystem extends SubsystemBase {
 }
 ```
 
+### Position Cosine
+
+$$K_g * \cos (position)$$
+
+For a vertical arm system, we have to contend with gravity pulling the arm down, similar to an elevator. However, unlike the elevator, the gravitational force applied is not constant, but rather changes as the arm moves.
+
+![arm pos and gravity](https://github.com/Flash3388/Workshops-2024/assets/17641355/2dfd6f17-1060-4fbb-a7ba-bc845bf65f77)
+
+With feedforward we may wish to eliminate the effect of the gravitational force to simplify the control of the arm and keep it in place. For this kind of use, feed forward is not good enough to control an arm on its own, as it is not aware of the error of the arm and thus cannot act to reach the set point. But feed forward in this case is aware of the position of the arm. 
+
+Consider that the gravitational force is strongest when the arm is on the floor. Let's call this position, angle 0. When the arm is perpendicular to the floor, angle 90, the gravitational force is minimial on the arm. When we pass 90 degrees, the direction of the gravitational force changes, so we would want to change the direction of the output (sign). As such, we can describe the strength of gravity as cosine function:
+
+![cosine function](https://github.com/Flash3388/Workshops-2024/assets/17641355/255ebfaf-9146-4dac-8900-a8debe1245f0)
+
+So using this function, we get the strongest output (1) at angle 0, and a minimal output (0) at angle 90, and negative outputs after angle 90. So by describing the dynamics of the system as such, we get a good response to the gravity. With the gain $K_g$, we can control the proportional output to the cosine, and by calibrating this, we get an appropriate output to keep the arm in place at each different position (angle). Although for this to work, the position measurement of the system must fit our definitions of where 0, 90 and such positions are. If the sensor output does not match this, one can manipulate that output (by adding or subtracting values from it) to get the angles to fit exactly.
+
+```
+public class SomeSystem extends SubsystemBase {
+  public static final double OUTPUT_KG = 0.01;
+  ...
+  public void move(double setPoint) {
+    double angle = getCurrentAngle();
+    double output = OUTPUT_KG * Math.cos(Math.toRadians(angle));
+    motor.set(output);
+  }
+  ...
+}
+```
+
+### Combining All Together
+
+We've seen several different equations for feed forward which provide different responses. All these equations should be tailored to fit the specific system, which is basically the idea of having a mathmetical model of the system. For other systems we can come up with many different equations as we wish, it is a simple matter of understanding how the system and forces behave and coming up with functions to handle them. 
+
+We could also combine different feed forward equations into a single bigger equation, as to allow the feed forward to handle multiple different requirements. We could, for example, combine $K_v * setPoint + Ks$. With this, we can counteract a static force _and_ control the velocity to a wanted velocity. This goes well together because, when a static force is applied to the system, $K_v * setPoint$ will struggle getting the system to a wanted velocity. We'll actually see when we start using motion profiling, how much combining different feed forward equations can be useful.
+
+We can be really flexible with how feed forward looks and what it does. Don't be limited to the examples we saw here, feel free to do things as you wish and come up with different ideas to get the best out of our systems. 
+
 ### WPILib's FeedForward
 
-WPILib actually features multiple feed forward equations in different classes. We will be using the `SimpleMotorFeedForward` here, which provides the kind of feed forward we just discussed. These classes don't have much to them as feed-forward is not as complex as pid.
+WPILib actually features multiple feed forward equations in different classes. Some examples are:
+- `SimpleMotorFeedForward`: combining static output to handle static forces, with $k_v * velocitySetPoint$ to control motion velocity and so forth.  
+- `ArmFeedForward`: combining position cosine to counteract gravity, with $k_v * velocitySetPoint$ to control motion velocity and so forth. 
+- `ElevatorFeedforward`: combining static output to counteract gravity, with $k_v * velocitySetPoint$ to control motion velocity and so forth.
+
+We will be using the `SimpleMotorFeedForward` here, These classes don't have much to them as feed-forward is not as complex as pid.
 
 `SimpleMotorFeedForward` is actually intended to use voltage as its output, and should be used as such. This makes $K_s$ as a voltage value and $K_v$ measured as volts per measurement unit (volts per rpm in out case). For proper use of this class, use these measurement units for consisent and proper use. 
 
