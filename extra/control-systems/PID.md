@@ -1,4 +1,4 @@
-![image](https://github.com/Flash3388/Workshops-2024/assets/17641355/e3bd4bdf-e525-44b0-9025-f2143df7f77b)## Control Loops
+## Control Loops
 
 When controlling a specific system we generally wish to control a specific set of states of the system in an attempt to change the current state of the system to a very specific state. For arm systems this could be its angle (position), which we try to move such that it is at a specific angle. For an elevator system this could be its height and so forth. This need to exert control over the system can be simple or complex, depending on the system and what we aim to do with it. 
 
