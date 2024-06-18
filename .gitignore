@@ -7,6 +7,7 @@ build/
 bin/
 out/
 simgui*
+networktables.json
 
 # Compiled class file
 *.class
