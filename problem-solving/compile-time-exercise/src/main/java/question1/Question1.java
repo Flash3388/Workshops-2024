@@ -3,11 +3,13 @@ package question1;
 public class Question1 {
 
     public static void main(String[] args) {
-        int number = sumNumbers(5.5, 6);
-        System.out.println(number);
-    }
+        int[] arr = {2, -3, 1};
 
-    private static int sumNumbers(int a, int b) {
-        return a + b;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] > 0) {
+                if (arr[i] % 2 == 0) {
+                    System.out.println(arr[i]);
+            }
+        }
     }
 }
