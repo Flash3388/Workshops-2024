@@ -1,8 +1,8 @@
-package question2;
+package question5;
 
 import java.util.Scanner;
 
-public class Question2 {
+public class Question5 {
 
     // A simple calculator program for the console.
     // The program runs forever, each time expecting
@@ -14,6 +14,8 @@ public class Question2 {
     // then printing the output.
     // to close the calculator, the user must input "exit" in either
     // lower case or upper case
+    // the code is made up of the main and a Parser that reads the user info and parses
+    // it.
 
     // test that this program works for the following inputs:
     // 5+2

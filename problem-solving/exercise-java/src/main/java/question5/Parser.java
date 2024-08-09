@@ -1,4 +1,4 @@
-package question2;
+package question5;
 
 public class Parser {
 
@@ -32,7 +32,6 @@ public class Parser {
                 chars.append(ch);
             } else {
                 // end of number
-                currentIndex--;
                 break;
             }
         }
@@ -60,20 +59,15 @@ public class Parser {
     private void eatWhitespace() {
         while (currentIndex < line.length()) {
             char ch = line.charAt(currentIndex);
+            currentIndex++;
 
-            if (Character.isWhitespace(ch)) {
-                currentIndex++;
-            } else {
+            if (!Character.isWhitespace(ch)) {
                 break;
             }
         }
     }
 
     private char eat() throws ParseException {
-        if (isAtEnd()) {
-            throw new ParseException("missing data");
-        }
-
         char ch = line.charAt(currentIndex);
         currentIndex++;
 
