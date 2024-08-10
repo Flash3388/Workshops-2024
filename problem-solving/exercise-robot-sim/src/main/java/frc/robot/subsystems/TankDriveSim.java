@@ -1,11 +1,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
-import frc.robot.Constants;
+import frc.robot.RobotMap;
 import frc.robot.Conversions;
 
 public class TankDriveSim {
@@ -27,10 +26,10 @@ public class TankDriveSim {
 
         sim = new DifferentialDrivetrainSim(
                 DCMotor.getCIM(DRIVE_SIDE_MOTOR_COUNT), // we use CIM motors in this example
-                Constants.DRIVE_MOTOR_TO_WHEEL_GEAR_RATIO,
+                RobotMap.DRIVE_MOTOR_TO_WHEEL_GEAR_RATIO,
                 DRIVE_MOMENT_OF_INERTIA,
                 WEIGHT_KG,
-                Constants.DRIVE_WHEEL_RADIUS_M,
+                RobotMap.DRIVE_WHEEL_RADIUS_M,
                 DRIVE_TRACK_WIDTH_M,
                 null
         );

@@ -14,12 +14,10 @@ import frc.robot.subsystems.DriveSystem;
 public class Robot extends TimedRobot {
 
     private DriveSystem driveSystem;
-    private XboxController controller;
 
     @Override
     public void robotInit() {
         driveSystem = new DriveSystem();
-        controller = new XboxController(0);
     }
 
     @Override

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Conversions;
 import frc.robot.Robot;
+import frc.robot.RobotMap;
 
 public class DriveSystem extends SubsystemBase {
 
@@ -23,8 +24,8 @@ public class DriveSystem extends SubsystemBase {
     private final DifferentialDriveOdometry odometry;
 
     public DriveSystem() {
-        motorR = new WPI_TalonSRX(0);
-        motorL = new WPI_TalonSRX(0);
+        motorR = new WPI_TalonSRX(RobotMap.DRIVE_MOTOR_RIGHT);
+        motorL = new WPI_TalonSRX(RobotMap.DRIVE_MOTOR_LEFT);
         gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 
         field = new Field2d();
