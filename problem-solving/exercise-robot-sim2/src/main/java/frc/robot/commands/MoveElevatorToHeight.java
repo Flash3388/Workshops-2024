@@ -14,8 +14,6 @@ public class MoveElevatorToHeight extends Command {
 
     public MoveElevatorToHeight(ElevatorSystem elevatorSystem, double targetHeightMeters) {
         this.elevatorSystem = elevatorSystem;
-
-        addRequirements(elevatorSystem);
     }
 
     @Override
@@ -32,8 +30,7 @@ public class MoveElevatorToHeight extends Command {
 
     @Override
     public boolean isFinished() {
-        double currentHeight = elevatorSystem.getHeightMeters();
-        return MathUtil.isNear(targetHeightMeters, TOLERANCE, currentHeight);
+        return false;
     }
 
     @Override

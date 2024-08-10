@@ -9,6 +9,14 @@ import frc.robot.subsystems.ElevatorSystem;
 
 public class Robot extends TimedRobot {
 
+    // this is a simulated robot code for a robot with an elevator.
+    // the elevator is controlled with a single command with a basic
+    // algorithm.
+    // use the buttons to move the elevator to different positions. While you hold the button, the elevator
+    // will move to the position and stay in place. releasing the button will stop the command
+    // and the elevator will drop.
+    // but there are problems.
+
     private ElevatorSystem elevatorSystem;
     private XboxController controller;
 
@@ -18,13 +26,13 @@ public class Robot extends TimedRobot {
         controller = new XboxController(0);
 
         new JoystickButton(controller, XboxController.Button.kY.value)
-                .onTrue(new MoveElevatorToHeight(elevatorSystem, 2));
+                .whileTrue(new MoveElevatorToHeight(elevatorSystem, 2));
         new JoystickButton(controller, XboxController.Button.kX.value)
-                .onTrue(new MoveElevatorToHeight(elevatorSystem, 0.5));
+                .whileTrue(new MoveElevatorToHeight(elevatorSystem, 0.5));
         new JoystickButton(controller, XboxController.Button.kB.value)
-                .onTrue(new MoveElevatorToHeight(elevatorSystem, 1));
+                .whileTrue(new MoveElevatorToHeight(elevatorSystem, 1));
         new JoystickButton(controller, XboxController.Button.kA.value)
-                .onTrue(new MoveElevatorToHeight(elevatorSystem, 0));
+                .whileTrue(new MoveElevatorToHeight(elevatorSystem, 0));
     }
 
     @Override
