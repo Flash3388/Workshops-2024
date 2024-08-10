@@ -13,6 +13,20 @@ import frc.robot.subsystems.DriveSystem;
 
 public class Robot extends TimedRobot {
 
+    // this is a simulation code for a robot
+    // with a basic tank drive.
+    // we have one subsystem: the tank drive, which has a few autonomous commands
+    // during autonomous we are attempting to run a sequence of commands
+    // to make the robot:
+    // - drive straight 3 meters forward
+    // - rotate to 255 degrees
+    // - drive straight 1 meters forward
+    // - rotate to 45 degrees
+    // - drive straight 1 meter backward
+    //
+    // but there are a few bugs in the code.
+    // fix the code so the autonomous sequence succeeds
+
     private DriveSystem driveSystem;
 
     @Override
