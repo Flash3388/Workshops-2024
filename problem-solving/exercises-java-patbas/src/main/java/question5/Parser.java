@@ -44,6 +44,7 @@ public class Parser {
                 chars.append(ch);
             } else {
                 // end of number
+                currentIndex--;
                 break;
             }
         }
@@ -71,15 +72,20 @@ public class Parser {
     private void eatWhitespace() {
         while (currentIndex < line.length()) {
             char ch = line.charAt(currentIndex);
-            currentIndex++;
 
-            if (!Character.isWhitespace(ch)) {
+            if (Character.isWhitespace(ch)) {
+                currentIndex++;
+            } else {
                 break;
             }
         }
     }
 
     private char eat() throws ParseException {
+        if (isAtEnd()) {
+            throw new ParseException("missing data");
+        }
+
         char ch = line.charAt(currentIndex);
         currentIndex++;
 

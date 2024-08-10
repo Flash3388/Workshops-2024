@@ -1,44 +1,22 @@
 package question5;
 
-import com.google.gson.stream.JsonReader;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
 public class Question5 {
 
-    public static void main(String[] args) throws IOException {
-        List<Integer> list = readIntListFromResource("/q5file.json");
-        System.out.println(list);
-    }
+    // this program has some parts of bank application.
+    // it contains a basic account and bank to store a bunch of
+    // accounts.
+    // the main does a bunch of stuff with these class, as
+    // a way to test them. but there are problems.
 
-    static List<Integer> readIntListFromResource(String path) throws IOException {
-        try (InputStream stream = Question5.class.getResourceAsStream(path)) {
-            return readIntListFromStream(stream);
-        }
-    }
+    public static void main(String[] args) {
+        Bank bank = new Bank();
 
-    static List<Integer> readIntListFromStream(InputStream stream) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-             JsonReader jsonReader = new JsonReader(reader)) {
-            return readIntListFromReader(jsonReader);
-        }
-    }
+        Account account = new Account();
+        account.deposit(1000);
+        bank.addAccount(account);
 
-    static List<Integer> readIntListFromReader(JsonReader reader) throws IOException {
-        List<Integer> list = new ArrayList<>();
-
-        reader.beginArray();
-        while (reader.hasNext()) {
-            int value = reader.nextInt();
-            list.add(value);
-        }
-        reader.endArray();
-
-        return list;
+        Account account2 = new Account();
+        account2.deposit(400);
+        bank.addAccount(account2);
     }
 }

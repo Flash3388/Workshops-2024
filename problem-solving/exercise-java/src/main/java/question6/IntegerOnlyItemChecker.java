@@ -1,4 +1,4 @@
-package question4;
+package question6;
 
 public class IntegerOnlyItemChecker implements ItemChecker {
 

@@ -37,13 +37,17 @@ public class Question4 {
         int rowCount = cells.length;
         int colCount = cells[0].length;
 
-        int rowStart = Math.max(0, row);
-        int colStart = Math.max(0, col);
+        int rowStart = Math.max(0, row - 1);
+        int colStart = Math.max(0, col - 1);
         int rowEnd = Math.min(row + 1, rowCount);
         int colEnd = Math.min(col + 1, colCount);
 
         for (int i = rowStart; i <= rowEnd; i++)  {
             for (int j = colStart; j <= colEnd; j++) {
+                if (i == row && j == col) {
+                    continue;
+                }
+
                 if (cells[i][j]) {
                     count++;
                 }

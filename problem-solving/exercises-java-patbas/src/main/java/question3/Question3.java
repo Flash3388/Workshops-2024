@@ -24,12 +24,17 @@ public class Question3 {
         int largestLength = 0;
 
         for (int i = 0; i < words.length; i++) {
+            if (words[i] == null) {
+                // no more words
+                break;
+            }
+
             String word = words[i];
             int len = word.length();
 
             if (len > largestLength) {
                 largest = word;
-                len = largestLength;
+                largestLength = len;
             }
         }
 
@@ -39,7 +44,7 @@ public class Question3 {
     private static String[] splitIntoWords(String sentence) {
         String[] words = new String[100];
 
-        int wordStartIndex = -1;
+        int wordStartIndex = 0;
         int nextWordIndex = 0;
 
         for (int i = 0; i < sentence.length(); i++) {
@@ -47,10 +52,11 @@ public class Question3 {
 
             if (ch == ' ') {
                 // end of a word is whitespace
-                // collect the entire word from start to here
-                String word = sentence.substring(wordStartIndex, i + 1);
-                words[nextWordIndex] = word;
-                nextWordIndex++;
+                String word = sentence.substring(wordStartIndex, i);
+                if (!word.isBlank()) {
+                    words[nextWordIndex] = word;
+                    nextWordIndex++;
+                }
 
                 wordStartIndex = i + 1;
             }
