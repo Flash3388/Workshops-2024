@@ -6,8 +6,8 @@ import frc.robot.subsystems.TurretSystem;
 
 public class TurretXbox extends Command {
 
-    private TurretSystem turretSystem;
-    private XboxController xboxController;
+    private final TurretSystem turretSystem;
+    private final XboxController xboxController;
 
     public TurretXbox(TurretSystem turretSystem, XboxController xboxController) {
         this.turretSystem = turretSystem;

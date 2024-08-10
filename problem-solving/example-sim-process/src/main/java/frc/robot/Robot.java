@@ -20,6 +20,8 @@ public class Robot extends TimedRobot {
         turretXboxCommand = new TurretXbox(turretSystem, controller);
         controller = new XboxController(0);
 
+        turretSystem.setDefaultCommand(turretXboxCommand);
+
         new JoystickButton(controller, XboxController.Button.kY.value)
                 .onTrue(new TurretRotateToAngle(turretSystem, 0));
         new JoystickButton(controller, XboxController.Button.kX.value)

@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.sim.TurretSim;
@@ -51,7 +52,7 @@ public class TurretSystem extends SubsystemBase {
         if (isAtRight() || isAtLeft()) {
             stop();
         } else {
-            motor.set(-speed);
+            motor.set(speed);
         }
     }
 
@@ -62,5 +63,10 @@ public class TurretSystem extends SubsystemBase {
     @Override
     public void periodic() {
         sim.update();
+
+        SmartDashboard.putNumber("TurretOrientation", getAngleDegrees());
+        SmartDashboard.putBoolean("TurretLeftSwitch", isAtLeft());
+        SmartDashboard.putBoolean("TurretCenterSwitch", isAtCenter());
+        SmartDashboard.putBoolean("TurretRightSwitch", isAtRight());
     }
 }
