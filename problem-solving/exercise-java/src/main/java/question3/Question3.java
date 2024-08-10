@@ -45,7 +45,7 @@ public class Question3 {
         for (int i = 0; i < sentence.length(); i++) {
             char ch = sentence.charAt(i);
 
-            if (ch == ' ') {
+            if (ch = ' ') {
                 // end of a word is whitespace
                 // collect the entire word from start to here
                 String word = sentence.substring(wordStartIndex, i + 1);

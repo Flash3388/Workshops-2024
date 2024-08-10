@@ -1,4 +1,4 @@
-package question7;
+package question6;
 
 import com.google.gson.stream.JsonReader;
 
@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Question7 {
+public class Question6 {
 
     // the following program uses the gson library to read and parse
     // a json file. Json is a pretty well known human-readable format
@@ -22,12 +22,12 @@ public class Question7 {
     // but it has problems...
 
     public static void main(String[] args) throws IOException {
-        List<Integer> list = readIntListFromResource("/q7file.json");
+        List<Integer> list = readIntListFromResource("/q6file.json");
         System.out.println(list);
     }
 
     static List<Integer> readIntListFromResource(String path) throws IOException {
-        try (InputStream stream = Question7.class.getResourceAsStream(path)) {
+        try (InputStream stream = Question6.class.getResourceAsStream(path)) {
             return readIntListFromStream(stream);
         }
     }
