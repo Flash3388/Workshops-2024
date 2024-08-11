@@ -76,7 +76,7 @@ public class ArmSim {
         sim.update(0.02);
 
         double position = Math.toDegrees(sim.getAngleRads());
-        motor.updateOdometry(position, Math.toDegrees(sim.getVelocityRadPerSec()));
+        motor.updateOdometry(sim.getAngleRads(), sim.getVelocityRadPerSec());
 
         mechanismLigament.setAngle(position);
     }
