@@ -24,8 +24,8 @@ public class ElevatorSystem extends SubsystemBase {
         motor = new CANSparkMax(RobotMap.ELEVATOR_MOTOR, CANSparkLowLevel.MotorType.kBrushless);
         encoder = motor.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, RobotMap.NEO_ENCODER_PPR);
 
-        bottomSwitch = new DigitalInput(RobotMap.ELEVATOR_BOTTOM_SWITCH);
-        topSwitch = new DigitalInput(RobotMap.ELEVATOR_TOP_SWITCH);
+        bottomSwitch = new DigitalInput(RobotMap.ELEVATOR_TOP_SWITCH);
+        topSwitch = new DigitalInput(RobotMap.ELEVATOR_BOTTOM_SWITCH);
 
         sim = new ElevatorSim(motor);
     }

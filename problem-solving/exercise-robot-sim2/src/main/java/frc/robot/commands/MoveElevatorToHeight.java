@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSystem;
 
@@ -18,14 +19,18 @@ public class MoveElevatorToHeight extends Command {
 
     @Override
     public void initialize() {
-
+        SmartDashboard.putBoolean("ArmAtHeight", false);
     }
 
     @Override
     public void execute() {
         double currentHeight = elevatorSystem.getHeightMeters();
-        double speed = (targetHeightMeters - currentHeight) * 0.1;
+        double speed = (currentHeight - targetHeightMeters) * 0.1;
         elevatorSystem.move(speed + RESIST_GRAVITY_SPEED);
+
+        if (MathUtil.isNear(targetHeightMeters, currentHeight, TOLERANCE)) {
+            SmartDashboard.putBoolean("ArmAtHeight", true);
+        }
     }
 
     @Override

@@ -11,4 +11,5 @@ public class SimSettings {
     public static final boolean ELEVATOR_SIMULATE_GRAVITY = true;
     public static final double ELEVATOR_STARTING_HEIGHT = ELEVATOR_MIN_HEIGHT;
     public static final double ELEVATOR_PHYSICAL_LIMIT_DIFF = 0.1;
+    public static final int NEO_ENCODER_PPR = 42;
 }

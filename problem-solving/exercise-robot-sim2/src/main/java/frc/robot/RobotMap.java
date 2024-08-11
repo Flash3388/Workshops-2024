@@ -2,7 +2,7 @@ package frc.robot;
 
 public class RobotMap {
 
-    public static final int NEO_ENCODER_PPR = 42;
+    public static final int NEO_ENCODER_PPR = 10;
 
     public static final int ELEVATOR_MOTOR = 8;
     public static final int ELEVATOR_TOP_SWITCH = 5;
