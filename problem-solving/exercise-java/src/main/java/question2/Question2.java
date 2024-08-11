@@ -45,7 +45,7 @@ public class Question2 {
         String word = in.nextLine();
         System.out.println("The word to guess is: " + word);
 
-        int badGuesses = 0
+        int badGuesses = 0;
         String guessedLetters = "";
 
         while (badGuesses < 5) {

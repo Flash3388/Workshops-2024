@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class Bank {
 
-    private ArrayList<Account> accounts;
+    private final ArrayList<Account> accounts;
 
     public Bank() {
-
+        accounts = new ArrayList<>();
     }
 
     public int getAccountCount() {

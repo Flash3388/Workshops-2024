@@ -3,7 +3,7 @@ package question6;
 public class Question6 {
 
     public static void main(String[] args) {
-        int number = sumNumber(5.5, 6);
+        int number = sumNumbers(5, 6);
         System.out.println(number);
     }
 

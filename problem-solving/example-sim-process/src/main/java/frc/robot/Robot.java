@@ -17,9 +17,20 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        turretXboxCommand = new TurretXbox(turretSystem, controller);
+        turretSystem = new TurretSystem();
         controller = new XboxController(0);
 
+        CommandScheduler.getInstance().onCommandInitialize((command)-> {
+            System.out.println("Command initialized: " + command.getName());
+        });
+        CommandScheduler.getInstance().onCommandFinish((command)-> {
+            System.out.println("Command finished: " + command.getName());
+        });
+        CommandScheduler.getInstance().onCommandInterrupt((command)-> {
+            System.out.println("Command interrupt: " + command.getName());
+        });
+
+        turretXboxCommand = new TurretXbox(turretSystem, controller);
         turretSystem.setDefaultCommand(turretXboxCommand);
 
         new JoystickButton(controller, XboxController.Button.kY.value)

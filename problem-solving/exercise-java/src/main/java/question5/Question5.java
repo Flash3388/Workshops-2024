@@ -26,7 +26,7 @@ public class Question5 {
     //     *
     //
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         char[][] display = new char[10][15];
         clearDisplay(display);
 
@@ -80,5 +80,5 @@ public class Question5 {
             }
             System.out.println();
         }
-    }
+    }*/
 }

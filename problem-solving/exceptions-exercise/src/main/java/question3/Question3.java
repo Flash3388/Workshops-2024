@@ -13,6 +13,7 @@ public class Question3 {
     // problems...
 
     public static void main(String[] args) {
-        Singleton.getInstance().doSomething();
+        Singleton instance = Singleton.getInstance();
+        instance.doSomething();
     }
 }

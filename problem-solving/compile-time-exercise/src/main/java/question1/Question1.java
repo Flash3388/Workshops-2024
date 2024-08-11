@@ -9,6 +9,7 @@ public class Question1 {
             if (arr[i] > 0) {
                 if (arr[i] % 2 == 0) {
                     System.out.println(arr[i]);
+                }
             }
         }
     }

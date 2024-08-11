@@ -45,13 +45,15 @@ public class TurretSystem extends SubsystemBase {
     }
 
     public boolean isAtRight() {
-        return rightSwitch.get();
+        return !rightSwitch.get();
     }
 
     public void move(double speed) {
         if (isAtRight() || isAtLeft()) {
+            SmartDashboard.putBoolean("AtLimit", true);
             stop();
         } else {
+            SmartDashboard.putBoolean("AtLimit", false);
             motor.set(speed);
         }
     }

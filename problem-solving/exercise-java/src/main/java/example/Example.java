@@ -41,7 +41,7 @@ public class Example {
                 return 6;
             case '7':
                 return 7;
-            case '7':
+            case '/':
                 return 8;
             case '9':
                 return 9;

@@ -19,13 +19,36 @@ public class Robot extends TimedRobot {
     // during autonomous we are attempting to run a sequence of commands
     // to make the robot:
     // - drive straight 3 meters forward
-    // - rotate to 255 degrees
+    // - rotate to 90 degrees
     // - drive straight 1 meters forward
-    // - rotate to 45 degrees
+    // - rotate to 315 degrees
     // - drive straight 1 meter backward
     //
+    // the robot then should follow this path
+    //
+    //
+    //
+    //             /_____
+    //            /     |
+    //                  |
+    //                  |
+    //
+    // Starting at position (x: 0, y: 0, rotation: 0),
+    // the robot should reach the following positions on the field:
+    // - after first command (3, 0, 0)
+    // - after second command (3, 0, 90)
+    // - after third command (3, 1, 90)
+    // - after forth command (3, 1, 315)
+    // - after fifth command (2.29289, 1.70711, 315)
+    //
     // but there are a few bugs in the code.
-    // fix the code so the autonomous sequence succeeds
+    // fix the code so the autonomous sequence succeeds.
+    // do not re-write the code or add unnecessary things. the current
+    // code is your base code, simply fix it so that it works. So adding
+    // PID is not part of this exercise.
+    //
+    // remember to use the field object on the simulation gui to see
+    // the robot in motion. Open it under NetworkTables->SmartDashboard->Field
 
     private DriveSystem driveSystem;
 
